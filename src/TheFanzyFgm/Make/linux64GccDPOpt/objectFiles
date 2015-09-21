@@ -1,0 +1,4 @@
+OBJECTS = \
+$(OBJECTS_DIR)/hPsiFanzy.o\
+$(OBJECTS_DIR)/fanzyLookUp.o\
+$(OBJECTS_DIR)/fanzyLookUpAuxiliaryFunctions.o

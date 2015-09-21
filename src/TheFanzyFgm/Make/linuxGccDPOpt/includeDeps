@@ -1,0 +1,3 @@
+include ./hPsiFanzy/hPsiFanzy.dep
+include ./fanzyLookUp/fanzyLookUp.dep
+include ./fanzyLookUp/fanzyLookUpAuxiliaryFunctions.dep

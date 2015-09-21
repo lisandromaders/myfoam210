@@ -1,0 +1,4 @@
+DEPENDENCIES = \
+./hPsiFanzy/hPsiFanzy.dep\
+./fanzyLookUp/fanzyLookUp.dep\
+./fanzyLookUp/fanzyLookUpAuxiliaryFunctions.dep

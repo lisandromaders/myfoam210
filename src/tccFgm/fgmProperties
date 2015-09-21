@@ -1,0 +1,38 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2.0.1                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      fgmProperties;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+debugOutput             on;
+
+fgmFile                 "$FOAM_CASE/constant/FGM.dat";
+
+scalePV                 off;
+scalePVFile             "$FOAM_CASE/constant/ScalePV.dat";
+
+thermo
+{
+    CpIndex             6;
+    RIndex              13;
+    muIndex             4;
+    alphaIndex          12;
+    TIndex              3;
+    hIndex              14;
+    rhoIndex            2;
+    PVsourceIndex       0;
+}
+
+
+// ************************************************************************* //

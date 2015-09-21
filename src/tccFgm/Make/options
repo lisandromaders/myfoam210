@@ -1,0 +1,8 @@
+EXE_INC = \
+    -I$(WM_PROJECT_DIR)/src/finiteVolume/lnInclude \
+    -I$(WM_PROJECT_DIR)/src/thermophysicalModels/basic/lnInclude \
+    -I$(WM_PROJECT_DIR)/src/thermophysicalModels/specie/lnInclude \
+    -I$(WM_PROJECT_DIR)/src/thermophysicalModels/reactionThermo/lnInclude
+
+LIB_LIBS = \
+    -lfiniteVolume

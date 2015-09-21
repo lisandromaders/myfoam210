@@ -1,0 +1,12 @@
+# 1 "options"
+# 1 "<built-in>"
+# 1 "<command-line>"
+# 1 "options"
+EXE_INC = -I$(WM_PROJECT_USER_DIR)/src/TheFanzyFgm/lnInclude -I$(LIB_SRC)/thermophysicalModels/basic/lnInclude -I$(LIB_SRC)/turbulenceModels/compressible/turbulenceModel -I$(LIB_SRC)/finiteVolume/cfdTools -I$(LIB_SRC)/finiteVolume/lnInclude
+
+
+
+
+
+
+EXE_LIBS = -L$(FOAM_USER_LIBBIN) -lTheFanzyFgm -lbasicThermophysicalModels -lreactionThermophysicalModels -lspecie -lcompressibleTurbulenceModel -lcompressibleRASModels -lcompressibleLESModels -lfiniteVolume -lmeshTools

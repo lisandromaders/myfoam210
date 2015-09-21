@@ -1,0 +1,4 @@
+SOURCE = \
+./hPsiFanzy/hPsiFanzy.C\
+./fanzyLookUp/fanzyLookUp.C\
+./fanzyLookUp/fanzyLookUpAuxiliaryFunctions.C

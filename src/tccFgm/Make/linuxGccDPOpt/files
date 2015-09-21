@@ -1,0 +1,11 @@
+# 1 "files"
+# 1 "<built-in>"
+# 1 "<command-line>"
+# 1 "files"
+./hPsiFanzy/hPsiFanzy.C
+./fanzyLookUp/fanzyLookUp.C
+./fanzyLookUp/fanzyLookUpAuxiliaryFunctions.C
+
+LIB = $(FOAM_USER_LIBBIN)/libTheFanzyFgm
+
+

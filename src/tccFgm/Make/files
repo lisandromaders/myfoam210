@@ -1,0 +1,7 @@
+./hPsiFanzy/hPsiFanzy.C
+./fanzyLookUp/fanzyLookUp.C
+./fanzyLookUp/fanzyLookUpAuxiliaryFunctions.C
+
+LIB = $(FOAM_USER_LIBBIN)/libTheFanzyFgmTcc
+
+

@@ -1,0 +1,18 @@
+EXE_INC = \
+    -I$(WM_PROJECT_USER_DIR)/src/tccFgm/lnInclude \
+    -I$(LIB_SRC)/thermophysicalModels/basic/lnInclude \
+    -I$(LIB_SRC)/turbulenceModels/compressible/turbulenceModel \
+    -I$(LIB_SRC)/finiteVolume/cfdTools \
+    -I$(LIB_SRC)/finiteVolume/lnInclude
+
+EXE_LIBS = \
+    -L$(FOAM_USER_LIBBIN) \
+    -lTheFanzyFgmTcc \
+    -lbasicThermophysicalModels \
+    -lreactionThermophysicalModels \
+    -lspecie \
+    -lcompressibleTurbulenceModel \
+    -lcompressibleRASModels \
+    -lcompressibleLESModels \
+    -lfiniteVolume \
+    -lmeshTools
