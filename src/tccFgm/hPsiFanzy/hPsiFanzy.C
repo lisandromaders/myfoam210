@@ -34,6 +34,7 @@ void Foam::hPsiFanzy::calculate()
 {
     scalarField& TCells = this->T_.internalField();
     scalarField& psiCells = this->psi_.internalField();
+    scalarField& rhoCells = this->rho_.internalField();
     scalarField& muCells = this->mu_.internalField();
     scalarField& alphaCells = this->alpha_.internalField();
 
@@ -58,6 +59,13 @@ void Foam::hPsiFanzy::calculate()
                                                 fgmThermoTransportIndices_[1]
                                             ));
 
+        rhoCells[celli] = fgmTable_.getValue2D
+                         (
+                             foamCV1Cells[celli],
+                             foamCV2Cells[celli],
+                             fgmThermoTransportIndices_[6]
+                         );
+
         muCells[celli] = fgmTable_.getValue2D
                          (
                              foamCV1Cells[celli],
@@ -76,6 +84,7 @@ void Foam::hPsiFanzy::calculate()
     {
         fvPatchScalarField& pT = this->T_.boundaryField()[patchi];
         fvPatchScalarField& ppsi = this->psi_.boundaryField()[patchi];
+        fvPatchScalarField& prho = this->rho_.boundaryField()[patchi];
 
         fvPatchScalarField& pmu = this->mu_.boundaryField()[patchi];
         fvPatchScalarField& palpha = this->alpha_.boundaryField()[patchi];
@@ -100,6 +109,13 @@ void Foam::hPsiFanzy::calculate()
                                                    pfoamCV2[facei],
                                                    fgmThermoTransportIndices_[1]
                                                ));
+
+                prho[facei] = fgmTable_.getValue2D
+                                (
+                                    pfoamCV1[facei],
+                                    pfoamCV2[facei],
+                                    fgmThermoTransportIndices_[6]
+                                );
 
                 pmu[facei] = fgmTable_.getValue2D
                                 (
@@ -134,6 +150,13 @@ void Foam::hPsiFanzy::calculate()
                                                    pfoamCV2[facei],
                                                    fgmThermoTransportIndices_[1]
                                                ));
+
+                prho[facei] = fgmTable_.getValue2D
+                                (
+                                    pfoamCV1[facei],
+                                    pfoamCV2[facei],
+                                    fgmThermoTransportIndices_[6]
+                                );
 
                 pmu[facei] = fgmTable_.getValue2D
                                 (
@@ -233,6 +256,8 @@ Foam::hPsiFanzy::hPsiFanzy
          << fgmTable_.dataNames()[fgmThermoTransportIndices_[3]] << nl
          << "dataFieldName[T] = "
          << fgmTable_.dataNames()[fgmThermoTransportIndices_[4]] << nl
+         << "dataFieldName[rho] = "
+         << fgmTable_.dataNames()[fgmThermoTransportIndices_[6]] << nl
          << endl;
     
     calculate();
