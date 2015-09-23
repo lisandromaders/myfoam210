@@ -232,7 +232,8 @@ Foam::hPsiFanzy::hPsiFanzy
             IOobject::NO_READ,
             IOobject::AUTO_WRITE
         ),
-        mesh
+        mesh,
+        dimEnergy/dimTime/dimLength/dimTemperature
     ),
 
     Dt_
@@ -245,7 +246,8 @@ Foam::hPsiFanzy::hPsiFanzy
             IOobject::NO_READ,
             IOobject::AUTO_WRITE
         ),
-        mesh
+        mesh,
+        dimensionSet(1, -1, -1, 0, 0)
     ),
 
     fgmTable_(fanzyLookUp),
