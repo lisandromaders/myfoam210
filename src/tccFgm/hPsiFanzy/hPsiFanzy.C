@@ -208,6 +208,20 @@ Foam::hPsiFanzy::hPsiFanzy
 
 //INICIALIZAR MINHAS NOVAS VARIAVEIS NA ORDEM!
 
+    rho_
+    (
+        IOobject
+        (
+            "rhoThermo",
+            mesh.time().timeName(),
+            mesh,
+            IOobject::NO_READ,
+            IOobject::NO_WRITE
+        ),
+        mesh,
+        dimDensity
+    ),
+
     kappa_
     (
         IOobject

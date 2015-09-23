@@ -47,6 +47,8 @@ class hPsiFanzy
 :
     public basicPsiThermo
 {
+	volScalarField rho_;
+
         volScalarField kappa_;
 
         volScalarField Dt_;
@@ -102,7 +104,7 @@ public:
 		return rho_;
 	}
 
-	virtual tmp<volScalarField> kappa() const
+	tmp<volScalarField> kappa() const
 	{
 		return kappa_;
 	}
