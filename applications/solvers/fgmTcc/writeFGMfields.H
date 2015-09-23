@@ -10,7 +10,7 @@ volScalarField Tfgm
         IOobject::NO_READ,
         IOobject::NO_WRITE
     ),
-    fgmTable.getField2D(zt,pv,fgmThermoTransportIndices[4])
+    fgmTable.getField2D(zt,pv,fgmThermoTransportIndices[1])
 );
 Tfgm.write();
 

@@ -212,7 +212,7 @@ Foam::hPsiFanzy::hPsiFanzy
     (
         IOobject
         (
-            "rhoThermo",
+            "rho",
             mesh.time().timeName(),
             mesh,
             IOobject::NO_READ,
