@@ -29,12 +29,6 @@
        	transportProperties.lookup("fanzy")
     );
 
-    dimensionedScalar DT
-    (
-       	transportProperties.lookup("DT")
-    );
-
-
     volScalarField rho
     (
         IOobject
@@ -48,17 +42,30 @@
         thermo.rho()
     );
 
-    volScalarField alfa
+    volScalarField Dt
     (
      	IOobject
         (
-            "alfa",
+            "Dt",
             runTime.timeName(),
             mesh,
             IOobject::READ_IF_PRESENT,
             IOobject::AUTO_WRITE
         ),
-	thermo.alpha()
+	thermo.Dt()
+    );
+
+    volScalarField kappa
+    (
+     	IOobject
+        (
+            "kappa",
+            runTime.timeName(),
+            mesh,
+            IOobject::READ_IF_PRESENT,
+            IOobject::AUTO_WRITE
+        ),
+	thermo.kappa()
     );
 
 

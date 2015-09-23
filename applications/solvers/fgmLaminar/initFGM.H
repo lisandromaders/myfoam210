@@ -61,8 +61,7 @@ hPsiFanzy thermo
                     cv1,
                     pv
                 );
-const volScalarField& T = thermo.T(); // a funcao T() eh uma funcao membro da classe basicThermo. Ela eh base para basicPsiThermo, que eh base para a classe hPsiFanzy. Essa funcao retorna o membro provado T_, que eh construido com o objeto IOobject, que deve ser lido e AUTO_WRITE. Porem,ainda nao entendi pq ele le a temperatura se em teoria a equacao da energia nao eh resolvida. Logo abaixo ele associara o objeto cv1 a h_, que eh o resultado da funcao membro h() (esta eh funcao membro da classe hPsiFanzy). O membro privado h_ eh construido no arquivo hPsiFanzy.C, apos os : da inicializacao do construtor. Tambem fica a duvida de porque a variavel de controle eh igualada a entalpia neste caso...
-
+const volScalarField& T = thermo.T();
 cv1 = thermo.h(); // do this ONLY if cv1 equals enthalpy! 
 
 {

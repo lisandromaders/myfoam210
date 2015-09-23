@@ -216,7 +216,7 @@ Foam::hPsiFanzy::hPsiFanzy
             mesh.time().timeName(),
             mesh,
             IOobject::NO_READ,
-            IOobject::NO_WRITE
+            IOobject::AUTO_WRITE
         ),
         mesh,
         dimDensity
@@ -230,7 +230,7 @@ Foam::hPsiFanzy::hPsiFanzy
             mesh.time().timeName(),
             mesh,
             IOobject::NO_READ,
-            IOobject::NO_WRITE
+            IOobject::AUTO_WRITE
         ),
         mesh
     ),
@@ -243,7 +243,7 @@ Foam::hPsiFanzy::hPsiFanzy
             mesh.time().timeName(),
             mesh,
             IOobject::NO_READ,
-            IOobject::NO_WRITE
+            IOobject::AUTO_WRITE
         ),
         mesh
     ),

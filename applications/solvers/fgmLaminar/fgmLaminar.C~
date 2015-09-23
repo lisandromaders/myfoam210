@@ -34,8 +34,7 @@ Description
 \*---------------------------------------------------------------------------*/
 
 #include "fvCFD.H"
-#include "basicPsiThermo.H"       //NAO EXISTE ESSE ARQUIVO NO OPENFOAM!!!!! DE ONDE ELE VEM? VERSAO ANTIGA DO OF! ACHO QUE DA VERSAO 2.2
-				//FOI SUBSTITUIDO POR psiThermo.H SE NAO ME ENGANO...
+#include "basicPsiThermo.H"
 #include "turbulenceModel.H"
 #include "bound.H"
 #include "pimpleControl.H"

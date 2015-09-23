@@ -149,14 +149,14 @@ void Foam::fanzyLookUp::readFgmFile(const fileName inputName)
     {
         is.read(fgmVariableNames_[i]);
         is.get(c);
-        if (c != ' ')
-        {
-            FatalErrorIn
-            (
-                "fanzyLookUp::readFgmFile(const fileName& inputName)"
-            )
-            << "cannot read FGM variable names" << abort(FatalError);
-        };
+//       if (c != ' ')
+//       {
+//           FatalErrorIn
+//           (
+//               "fanzyLookUp::readFgmFile(const fileName& inputName)"
+//           )
+//           << "cannot read FGM variable names" << abort(FatalError);
+//       };
     }
     readToNewline(is);
     
