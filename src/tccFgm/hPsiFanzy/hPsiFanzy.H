@@ -47,6 +47,10 @@ class hPsiFanzy
 :
     public basicPsiThermo
 {
+        volScalarField kappa_;
+
+        volScalarField Dt_;
+
         //- Table look up routines
         const fanzyLookUp& fgmTable_;
         
@@ -56,7 +60,6 @@ class hPsiFanzy
         
         //- FGM table index maps (CpIndex, RIndex, muIndex, alphaIndex)
         const labelList fgmThermoTransportIndices_;
-        
         
     // Private Member Functions
 
@@ -93,6 +96,21 @@ public:
 
         //- Update properties
         void correct();
+
+	virtual tmp<volScalarField> rho() const
+	{
+		return rho_;
+	}
+
+	virtual tmp<volScalarField> kappa() const
+	{
+		return kappa_;
+	}
+
+	tmp<volScalarField> Dt() const
+	{
+		return Dt_;
+	}
 
         // Fields derived from thermodynamic state variables
 
