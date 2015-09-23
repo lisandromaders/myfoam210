@@ -589,8 +589,6 @@ fgmTcc.dep: $(WM_PROJECT_DIR)/src/finiteVolume/lnInclude/rhoEqn.H
 fgmTcc.dep: UEqn.H
 fgmTcc.dep: pvEqn.H
 fgmTcc.dep: ztEqn.H
-fgmTcc.dep: pEqn.H
-fgmTcc.dep: $(WM_PROJECT_DIR)/src/finiteVolume/lnInclude/compressibleContinuityErrs.H
 fgmTcc.dep: writeFGMfields.H
 fgmTcc.dep: writeThermoPropertyFields.H
 $(OBJECTS_DIR)/fgmTcc.o: $(EXE_DEP)

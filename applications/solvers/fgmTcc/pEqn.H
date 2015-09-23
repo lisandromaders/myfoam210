@@ -67,6 +67,15 @@ else
     }
 }
 
+/*
+   TUDO ISSO FOI COMENTADO POIS O MEU PROBLEMA NAO VARIA A PRESSAO, 
+   LOGO NAO HA NECESSIDADE DE CORRIGIR A DENSIDADE,VISTO QUE ELA
+   EH PEGA DIRETAMENTE TA TABELA.. 
+*/
+
+
+/*
+
 #include "rhoEqn.H"
 #include "compressibleContinuityErrs.H"
 
@@ -86,3 +95,5 @@ U.correctBoundaryConditions();
 K = 0.5*magSqr(U);
 
 dpdt = fvc::ddt(p);
+*/
+
