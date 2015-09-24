@@ -149,14 +149,14 @@ void Foam::fanzyLookUp::readFgmFile(const fileName inputName)
     {
         is.read(fgmVariableNames_[i]);
         is.get(c);
-//       if (c != ' ')
-//       {
-//           FatalErrorIn
-//           (
-//               "fanzyLookUp::readFgmFile(const fileName& inputName)"
-//           )
-//           << "cannot read FGM variable names" << abort(FatalError);
-//       };
+       if (c != ' ')
+       {
+           FatalErrorIn
+           (
+               "fanzyLookUp::readFgmFile(const fileName& inputName)"
+           )
+           << "cannot read FGM variable names" << abort(FatalError);
+       };
     }
     readToNewline(is);
     
@@ -208,21 +208,27 @@ void Foam::fanzyLookUp::readFgmFile(const fileName inputName)
     Info << endl;
     
     //- Read the FGM data
-    forAll(fgmData_, i)
-    {
-        forAll(fgmData_[0], j)
-        {
-            is.read(rawCV1);
-            is.read(fgmCV2_[j]);
-            
-            forAll(fgmData_[0][0], k)
-            {
-                is.read(fgmData_[i][j][k]);
-            }
-            readToNewline(is);
-        }
-        fgmCV1_[i] = rawCV1;
-    }
+	    forAll(fgmData_, i)
+	    {
+		forAll(fgmData_[0], j)
+		{
+		    is.read(rawCV1);
+		    is.read(fgmCV2_[j]);
+		    
+		    forAll(fgmData_[0][0], k)
+		    {
+			is.read(fgmData_[i][j][k]);
+		    }
+		    readToNewline(is);
+		}
+		fgmCV1_[i] = rawCV1;
+	    }
+
+/*
+    O ERRO DE LEITURA ESTA ANTES DESTA PARTE, POIS NAS PROXIMAS LINHAS,QUANDO ELE ESCREVE
+    NA TELA O VALOR MAXIMO DAS VARIAVEIS DE CONTROLE, ELE ESCREVE COMO SENDO O VALOR 
+    MAXIMO DE PV (CV2) = 2.XXE-10.. LOGO, NA LEITURA OCORRE ALGUMA COISA ESTRANHA..
+*/
     
     //- Find max. value of CV 1 & 2; Needed to avoid segmentation faults if the 
     //  CV exceeds the tabulated values
