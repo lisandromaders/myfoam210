@@ -78,7 +78,8 @@ void Foam::fanzyLookUp::writeFgmFile(const fileName outputName)
             os.width(floatWidth);
             os << fgmCV1_[i] << ' ';
             os.width(floatWidth);
-            os << fgmCV2_[j] << ' ';
+//            os << fgmCV2_[j] << ' ';
+            os << rawCV2[i][j] << ' ';
             
             forAll(fgmData_[0][0], k)
             {

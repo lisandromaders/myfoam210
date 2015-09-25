@@ -101,7 +101,7 @@ protected:
 
           //- Names of variables in the FGM table
           List<word> fgmVariableNames_;
-          
+
           //- Control Variable (CV) 1
           List<scalar> fgmCV1_;
           
@@ -114,8 +114,11 @@ protected:
           //- Max. value of Control Variable (CV) 2
           scalar maxCV2_;
 
+//         //- FGM data table
+//         List<List<List<scalar> > > fgmData_;
+
           //- FGM data table
-          List<List<List<scalar> > > fgmData_;
+          List<List<scalar> >  fgmData_;
           
           //- Scale CV2 table
           List<List<scalar> >  scalePVTable_;
