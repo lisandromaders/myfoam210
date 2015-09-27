@@ -1,6 +1,7 @@
 if (fgmTable.debugOutput())
 {
     Info<< "### Write thermo property fields ###" << endl;
+    Info<< "Writing Cp" << endl;
     volScalarField CpDebug
     (
         IOobject
@@ -15,6 +16,7 @@ if (fgmTable.debugOutput())
     );
     CpDebug.write();
 
+    Info<< "Writing psi" << endl;
     volScalarField psiDebug
     (
         IOobject
@@ -29,6 +31,7 @@ if (fgmTable.debugOutput())
     );
     psiDebug.write();
 
+    Info<< "Writing mu" << endl;
     volScalarField muDebug
     (
         IOobject
@@ -43,6 +46,7 @@ if (fgmTable.debugOutput())
     );
     muDebug.write();
 
+    Info<< "Writing Dt" << endl;
     volScalarField DtDebug
     (
         IOobject
@@ -57,6 +61,7 @@ if (fgmTable.debugOutput())
     );
     DtDebug.write();
 
+    Info<< "Writing kappa" << endl;
     volScalarField kappaDebug
     (
         IOobject
@@ -71,6 +76,7 @@ if (fgmTable.debugOutput())
     );
     kappaDebug.write();
 
+    Info<< "Writing rho" << endl;
     volScalarField rhoDebug
     (
         IOobject

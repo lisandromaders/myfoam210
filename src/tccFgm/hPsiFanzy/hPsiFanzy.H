@@ -111,7 +111,7 @@ public:
 
 	tmp<volScalarField> Dt() const
 	{
-		return Dt_;
+		return kappa()/Cp();
 	}
 
         // Fields derived from thermodynamic state variables

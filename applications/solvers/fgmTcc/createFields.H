@@ -68,7 +68,6 @@
 	thermo.kappa()
     );
 
-
     Info<< "Reading field U\n" << endl;
     volVectorField U
     (

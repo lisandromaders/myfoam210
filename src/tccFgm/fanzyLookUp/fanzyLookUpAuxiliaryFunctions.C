@@ -60,7 +60,7 @@ void Foam::fanzyLookUp::writeFgmFile(const fileName outputName)
     os << nFgmCV2_ << nl
        << "[NUMBER_VARIABLES]" << nl;
     os.width(intWidth);
-    os << nFgmData_+2 << nl
+    os << nFgmData_ << nl
        << nl
        << "[DATA]" << nl;
     forAll(fgmVariableNames_, i)
@@ -76,19 +76,10 @@ void Foam::fanzyLookUp::writeFgmFile(const fileName outputName)
         forAll(fgmData_[0], j)
         {
             os.width(floatWidth);
-            os << fgmCV1_[i] << ' ';
-            os.width(floatWidth);
-//            os << fgmCV2_[j] << ' ';
-            os << rawCV2[i][j] << ' ';
-            
-            forAll(fgmData_[0][0], k)
-            {
-                os.width(floatWidth);
-                os << (fgmData_[i][j][k]) << ' ';
-            }
-            os << nl;
-            dataLabel++;
+            os << fgmData_[i][j] << ' ';
         }
+        os << nl;
+        dataLabel++;
     }
     os.flush();
 }

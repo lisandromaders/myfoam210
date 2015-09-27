@@ -61,6 +61,7 @@ hPsiFanzy thermo
                     zt,
                     pv
                 );
+
 const volScalarField& T = thermo.T(); 
 
 {

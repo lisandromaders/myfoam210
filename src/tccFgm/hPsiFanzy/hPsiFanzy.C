@@ -41,7 +41,7 @@ void Foam::hPsiFanzy::calculate()
 
     const scalarField& foamCV1Cells = foamCV1_.internalField();
     const scalarField& foamCV2Cells = foamCV2_.internalField();
-    
+
     forAll(TCells, celli)
     {
         TCells[celli] = fgmTable_.getValue2D
@@ -75,16 +75,14 @@ void Foam::hPsiFanzy::calculate()
                              fgmThermoTransportIndices_[2]
                          );
 
-        scalar kappatab = fgmTable_.getValue2D
+        kappaCells[celli] = fgmTable_.getValue2D
                          (
                              foamCV1Cells[celli],
                              foamCV2Cells[celli],
                              fgmThermoTransportIndices_[3]
                          );
 
-        kappaCells[celli] = kappatab;
-
-        DtCells[celli] = kappatab/Cptab;
+        DtCells[celli] = kappaCells[celli]/Cptab;
     }
 
     forAll(T_.boundaryField(), patchi)
@@ -285,7 +283,13 @@ Foam::hPsiFanzy::hPsiFanzy
             forAll(pT, facei)
             {
 //ACHO QUE AQUI DEVERIA SER pT[facei] AO INVES DE scalar Ttab!!!! VERIFICAR O QUE ISTO ESTA FAZENDO E DEBUGAR..
-                scalar Ttab = fgmTable_.getValue2D
+               //scalar Ttab = fgmTable_.getValue2D
+               //                (
+               //                    pfoamCV1[facei],
+               //                    pfoamCV2[facei],
+               //                    fgmThermoTransportIndices_[1]
+               //                );
+                pT[facei] = fgmTable_.getValue2D
                                 (
                                     pfoamCV1[facei],
                                     pfoamCV2[facei],
@@ -309,18 +313,21 @@ Foam::hPsiFanzy::hPsiFanzy
 
     // Correct enthalpy and temperature boundary conditions after initilisation
     T_.correctBoundaryConditions();
-    
-    Info << "dataFieldName[rho] = "
-         << fgmTable_.dataNames()[fgmThermoTransportIndices_[0]] << nl
-         << "dataFieldName[T] = "
-         << fgmTable_.dataNames()[fgmThermoTransportIndices_[1]] << nl
-         << "dataFieldName[Cp] = "
-         << fgmTable_.dataNames()[fgmThermoTransportIndices_[2]] << nl
-         << "dataFieldName[kappa] = "
-         << fgmTable_.dataNames()[fgmThermoTransportIndices_[3]] << nl
-         << "dataFieldName[mu] = "
-         << fgmTable_.dataNames()[fgmThermoTransportIndices_[4]] << nl
-         << endl;
+   
+    // With the changes made in the fanzyLookUp class the following lines did not work anymore. Probably, the function dataNames() was created
+    // to deal with the old array dimensions.. When everything is compiing and running fine I will take a look on this.
+ 
+   //Info << "dataFieldName[rho] = "
+   //     << fgmTable_.dataNames()[fgmThermoTransportIndices_[0]] << nl
+   //     << "dataFieldName[T] = "
+   //     << fgmTable_.dataNames()[fgmThermoTransportIndices_[1]] << nl
+   //     << "dataFieldName[Cp] = "
+   //     << fgmTable_.dataNames()[fgmThermoTransportIndices_[2]] << nl
+   //     << "dataFieldName[kappa] = "
+   //     << fgmTable_.dataNames()[fgmThermoTransportIndices_[3]] << nl
+   //     << "dataFieldName[mu] = "
+   //     << fgmTable_.dataNames()[fgmThermoTransportIndices_[4]] << nl
+   //     << endl;
     
     calculate();
 

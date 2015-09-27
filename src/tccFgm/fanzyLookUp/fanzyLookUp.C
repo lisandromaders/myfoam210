@@ -173,13 +173,21 @@ void Foam::fanzyLookUp::readFgmFile(const fileName inputName)
     nFgmCV1_ = nFlamelets;
     nFgmCV2_ = nPV;
     nFgmData_ = nVariables;
+    fgmCV1_ = List<scalar>
+		(
+		    nFgmCV1_*nFgmCV2_
+		);
+    fgmCV2_ = List<scalar>
+		(
+		    nFgmCV1_*nFgmCV2_
+		);
 
     fgmData_  = List<List<scalar> > 
                 (
-                    nFgmCV1_,
+                    nFgmCV1_*nFgmCV2_,
                     List<scalar> 
                     (
-                        nFgmCV2_
+                        nFgmData_
                     )
                 );
 
@@ -197,10 +205,10 @@ void Foam::fanzyLookUp::readFgmFile(const fileName inputName)
     for (label i=0; i<nFgmData_-2; i++)
     {
         Info << "               fgmVariableNames[" << i+2 << "] (dataField[" 
-             << i << "]) = " << fgmVariableNames_[i+2] << nl;
+             << i+2 << "]) = " << fgmVariableNames_[i+2] << nl;
     }
     Info << endl;
-   
+
 /*
 	O codigo original foi escrito para buscar os dados em uma configuracao
 	especifica de manifold. O algoritmo de busca foi modificado para lidar 
@@ -208,9 +216,9 @@ void Foam::fanzyLookUp::readFgmFile(const fileName inputName)
 	duvidas, contatar um de nos para pegar o manifold usado
 */
  
-    for (label i=0, i<nFlamelets*nPV, i++)
+    for (label i=0; i<nFlamelets*nPV; i++)
     {
-	for (label j=0, j<nFgmData_, j++)
+	for (label j=0; j<nFgmData_; j++)
         {
 	     is.read(fgmData_[i][j]);
 	}
@@ -223,7 +231,7 @@ void Foam::fanzyLookUp::readFgmFile(const fileName inputName)
 	uma vez que a leitura eh feita somente nesse momento..
 */
 
-    for (label i=0, i<nFlamelets*nPV, i++)
+    forAll(fgmData_, i)
     {
 	fgmCV1_[i] = fgmData_[i][0];
 	fgmCV2_[i] = fgmData_[i][1];
@@ -232,10 +240,8 @@ void Foam::fanzyLookUp::readFgmFile(const fileName inputName)
     //- Find max. value of CV 1 & 2; Needed to avoid segmentation faults if the 
     //  CV exceeds the tabulated values
 
-// Talvez aqui de erro, nao sei se posso entrar com tal argumento na funcao max..
-
-    maxCV1_ = max(fgmData_[i][0]);
-    maxCV2_ = max(fgmData_[i][1]);
+    maxCV1_ = max(fgmCV1_);
+    maxCV2_ = max(fgmCV2_);
     Info << "               Max. value of Control Variable 1: " << maxCV1_ << nl
          << "               Max. value of Control Variable 2: " << maxCV2_ << nl
          << endl;
@@ -505,93 +511,122 @@ Foam::scalar Foam::fanzyLookUp::interpolate2D
 ) const
 {
     scalar interpolatedValue;
+    /*
+    ------------------------------------------------------------------------------------------
+    	MINHA TENTATIVA DE IMPLEMENTACAO, TENTANDO LINKAR COM O QUE JA EXISTE..
+    ------------------------------------------------------------------------------------------
+    */
 
-/*
-------------------------------------------------------------------------------------------
-	MINHA TENTATIVA DE IMPLEMENTACAO, TENTANDO LINKAR COM O QUE JA EXISTE..
-------------------------------------------------------------------------------------------
-*/
-//DECLARAR TUDO QUE EU USAR
+    scalar cv1 = MNMX(foamCV1,0.0,1.0); //pois zt vai de 0 a 1 obrigatoriamente
+    
+    label wLow = (nFgmCV1_-1)*cv1; // numero do indice do conjunto low
+    label wHigh = wLow + 1; // numero do indice do conjunto high
+    if (wLow == (nFgmCV1_ - 1))
+    {
+	wHigh = wLow;
+    }
+    
+ 
+    label lLowMin = nFgmCV2_*wLow; // numero da linha de pvMin_low
+    label lLowMax = nFgmCV2_*(wLow+1) - 1; // numero da linha de pvMax_low
+    
+    label lHighMin = nFgmCV2_*(wHigh); // numero da linha de pvMin_high
+    label lHighMax = nFgmCV2_*(wHigh)+(nFgmCV2_-1); // numero da linha de pvMax_high
+    
+    scalar pvLow = MNMX(foamCV2,fgmCV2_[lLowMin],fgmCV2_[lLowMax]);
+    scalar pvHigh = MNMX(foamCV2,fgmCV2_[lHighMin],fgmCV2_[lHighMax]);
 
-cv1 = MNMX(foamCV1,0.0,1.0); //pois zt vai de 0 a 1 obrigatoriamente
+    //se nenhum passou de nenhum limite, pvLow=pvHigh
+    
+    scalar deltaPV_low = (fgmCV2_[lLowMax] - fgmCV2_[lLowMin])/nFgmCV2_;
+    scalar deltaPV_high = (fgmCV2_[lHighMax] - fgmCV2_[lHighMin])/nFgmCV2_;
+    
+    
+    // construindo indices globais, que representam as linhas..
+    
+    label lineLow1 = wLow*nFgmCV2_ + pvLow/deltaPV_low;
+    label lineLow2 = lineLow1 + 1;
 
-label wLowIndex = nFlamelets*cv1; // numero do indice do conjunto low
-label wHighIndex = wLowIndex + 1; // numero do indice do conjunto high
+    if (pvLow == fgmCV2_[lLowMin])
+    {
+        lineLow2 = lineLow1;
+    }
 
-label lLowLimCV2_min = nPV*wLowIndex; // numero da linha de pvMin_low
-label lLowLimCV2_max = nPV*(wLowIndex+1) - 1; // numero da linha de pvMax_low
+    label lineHigh1 = wHigh*nFgmCV2_ + pvHigh/deltaPV_high;
+    label lineHigh2 = lineHigh1 + 1;
 
-label lHighLimCV2_min = nPV*(wHighIndex); // numero da linha de pvMin_high
-label lHighLimCV2_max = nPV*(wHighIndex)+(nPv-1); // numero da linha de pvMax_high
+    if (pvHigh == fgmCV2_[lHighMin])
+    {
+        lineHigh2 = lineHigh1;
+    }
 
-scalar pvLow = MNMX(foamCV2,fgmCV2_[lLowLimCV2_min],fgmCV2_[lLowLimCV2_max]);
-scalar pvHigh = MNMX(foamCV2,fgmCV2_[lHighLimCV2_min],fgmCV2_[lHighLimCV2_max]);
+    label t, uLow, uHigh;
+    label uSpecial = 0;
 
-//se nenhum passou de nenhum limite, pvLow=pvHigh
-
-scalar deltaPV_low = (fgmCV2_[lLowLimCV2_max] - fgmCV2_[lLowLimCV2_min])/nPv;
-scalar deltaPV_high = (fgmCV2_[lHighLimCV2_max] - fgmCV2_[lHighLimCV2_min])/nPv;
-
-label INDICE_LOCAL_PV_LOW_MIN = pvLow/deltaPV_low;		// indice local para pvAmin
-label INDICE_LOCAL_PV_LOW_MAX = INDICE_LOCAL_PV_LOW_MIN + 1;	// indice local para pvAmax
-label INDICE_LOCAL_PV_HIGH_MIN = pvHigh/deltaPV_high;		// indice local para pvBmin
-label INDICE_LOCAL_PV_HIGH_MAX = INDICE_LOCAL_PV_HIGH_MIN + 1;	// indice local para pvBmax
-
-// construindo indices globais, que representam as linhas..
-
-CV2_minLow = wLowIndex*nPv + INDICE_LOCAL_PV_LOW_MIN;
-CV2_maxLow = wLowIndex*nPv + INDICE_LOCAL_PV_LOW_MAX;
-CV2_minHigh = wHighIndex*nPv + INDICE_LOCAL_PV_HIGH_MIN;
-CV2_maxHigh = wHighIndex*nPv + INDICE_LOCAL_PV_HIGH_MAX;
-
-
-//for (label i=lLowLimCV2_min, i<=lLowLimCV2_max, i++)
-//{
-//   tempCV2[i-lLowLimCV2_min] = fgmCV2_[i];
-//}
-//
-//label CV2_minLow = findLower(tempCV2, foamCV2); // indice da linha para pvAi
-//CV2_minLow = wLowIndex*nPV + CV2_minLow;
-//label CV2_minHigh = CV2_minLow + 1; // indice da linha pvA(i+1)
-//    
-//for (label i=lHighLimCV2_min, i<=lHighLimCV2_max, i++)
-//{
-//   tempCV2[i-lHighLimCV2_min] = fgmCV2_[i];
-//}
-
-label CV2_maxLow = findLower(tempCV2, foamCV2); // indice da linha para pvBi
-CV2_maxLow = wHighIndex*nPV + CV2_maxLow;
-label CV2_maxHigh = CV2_maxLow + 1; // indice da linha para pvB(i+1)
-
-
-    scalar t, u;
+    scalar deltaCV1 = 1.0/nFgmCV1_;
+    scalar txmin = deltaCV1*wLow;
+    scalar txmax = deltaCV1*wHigh;
     
     //- Check if 'findLower' returned -1, i.e. the Control Variable is out of 
     //  range at the lower end.
-    if (CV2_minLow == -1)
+    if (wLow == wHigh)
     {
-        CV2_minLow = CV2_minHigh;
-        t = 1.0;
+        uSpecial = 1;
+        t = 1;
     }
     else
     {
-        t = (foamCV1 - fgmCV1_[CV2_minLow])/(fgmCV1_[CV2_minHigh] - fgmCV1_[CV2_minLow]);
-    }
-    if (CV2_maxLow == -1)
-    {
-        CV2_maxLow = CV2_maxHigh;
-        u = 1.0;
-    }
-    else
-    {
-        u = (foamCV2 - fgmCV2_[CV2_maxLow])/(fgmCV2_[CV2_maxHigh] - fgmCV2_[CV2_maxLow]);
+        t = (foamCV1 - txmin)/(txmax - txmin);
     }
 
+    if (pvLow == fgmCV2_[lLowMax])
+    {
+        uLow = 1;
+    }
+    else
+    {
+	if (pvLow == fgmCV2_[lLowMin])
+	{
+	    uLow = 0;
+	}
+        else
+        {
+            uLow = (pvLow - fgmCV2_[lineLow1])/(fgmCV2_[lineLow2] - fgmCV2_[lineLow1]);
+        }
+    }
+    if (pvHigh == fgmCV2_[lHighMax])
+    {
+        uHigh = 1;
+    }
+    else
+    {
+	if (pvHigh == fgmCV2_[lHighMin])
+	{
+	    uHigh = 0;
+	}
+        else
+        {
+            uHigh = (pvHigh - fgmCV2_[lineHigh1])/(fgmCV2_[lineHigh2] - fgmCV2_[lineHigh1]);
+        }
+    }
     //- Calculate interpolated value for given control variable values
-    interpolatedValue = (1-t) * (1-u) * fgmData_[CV2_minLow][varI]
-                      +    t  * (1-u) * fgmData_[CV2_maxLow][varI]
-                      +    t  *    u  * fgmData_[CV2_maxHigh][varI]
-                      + (1-t) *    u  * fgmData_[CV2_minHigh][varI];
+
+    if (uSpecial == 1)
+    {
+    interpolatedValue = (1-uLow) * fgmData_[lineLow1][varI]
+                      +    uHigh  * fgmData_[lineHigh1][varI];
+
+    // lineLow1 = lineHigh1 and lineLow2 = lineHigh2 in this case
+    // as well as uLow = uHigh
+        
+    }
+    else
+    {
+    interpolatedValue = (1-t) * (1-uLow)     * fgmData_[lineLow1][varI]
+                      +    t  *   uLow       * fgmData_[lineLow2][varI]
+                      +    t  * (1 - uHigh)  * fgmData_[lineHigh1][varI]
+                      + (1-t) *   uHigh      * fgmData_[lineHigh2][varI];
+    }
 
     return interpolatedValue;
 }
