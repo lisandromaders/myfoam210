@@ -46,20 +46,20 @@ if (fgmTable.debugOutput())
     );
     muDebug.write();
 
-    Info<< "Writing Dt" << endl;
-    volScalarField DtDebug
-    (
-        IOobject
-        (
-            "Dt",
-            runTime.timeName(),
-            mesh,
-            IOobject::NO_READ,
-            IOobject::NO_WRITE
-        ),
-        thermo.Dt()
-    );
-    DtDebug.write();
+//   Info<< "Writing Dt" << endl;
+//   volScalarField DtDebug
+//   (
+//       IOobject
+//       (
+//           "Dt",
+//           runTime.timeName(),
+//           mesh,
+//           IOobject::NO_READ,
+//           IOobject::NO_WRITE
+//       ),
+//       thermo.Dt()
+//   );
+//   DtDebug.write();
 
     Info<< "Writing kappa" << endl;
     volScalarField kappaDebug

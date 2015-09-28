@@ -114,6 +114,16 @@ public:
 		return kappa()/Cp();
 	}
 
+	tmp<volScalarField> foamCV1() const
+	{
+		return foamCV1_;
+	}
+
+	tmp<volScalarField> foamCV2() const
+	{
+		return foamCV2_;
+	}
+
         // Fields derived from thermodynamic state variables
 
             //- Heat capacity at constant pressure for patch [J/kg/K]

@@ -517,8 +517,8 @@ Foam::scalar Foam::fanzyLookUp::interpolate2D
     ------------------------------------------------------------------------------------------
     */
 
-    scalar cv1 = MNMX(foamCV1,0.0,1.0); //pois zt vai de 0 a 1 obrigatoriamente
-    
+    scalar cv1 = MNMX(foamCV1,0.0045,1.0); //pois zt vai de 0 a 1 obrigatoriamente
+
     label wLow = (nFgmCV1_-1)*cv1; // numero do indice do conjunto low
     label wHigh = wLow + 1; // numero do indice do conjunto high
     if (wLow == (nFgmCV1_ - 1))
@@ -560,61 +560,61 @@ Foam::scalar Foam::fanzyLookUp::interpolate2D
         lineHigh2 = lineHigh1;
     }
 
-    label t, uLow, uHigh;
+    scalar t, uLow, uHigh;
     label uSpecial = 0;
 
     scalar deltaCV1 = 1.0/nFgmCV1_;
     scalar txmin = deltaCV1*wLow;
     scalar txmax = deltaCV1*wHigh;
     
-    //- Check if 'findLower' returned -1, i.e. the Control Variable is out of 
-    //  range at the lower end.
     if (wLow == wHigh)
     {
         uSpecial = 1;
-        t = 1;
+        t = 1.0;
     }
     else
     {
-        t = (foamCV1 - txmin)/(txmax - txmin);
+        t = (cv1 - txmin)/(txmax - txmin);
     }
-
+    
     if (pvLow == fgmCV2_[lLowMax])
     {
-        uLow = 1;
+        uLow = 1.0;
     }
     else
     {
 	if (pvLow == fgmCV2_[lLowMin])
 	{
-	    uLow = 0;
+	    uLow = 0.0;
 	}
         else
         {
-            uLow = (pvLow - fgmCV2_[lineLow1])/(fgmCV2_[lineLow2] - fgmCV2_[lineLow1]);
+           uLow = (pvLow - fgmCV2_[lineLow1])/(fgmCV2_[lineLow2] - fgmCV2_[lineLow1]);
         }
     }
+
     if (pvHigh == fgmCV2_[lHighMax])
     {
-        uHigh = 1;
+        uHigh = 1.0;
     }
     else
     {
 	if (pvHigh == fgmCV2_[lHighMin])
 	{
-	    uHigh = 0;
+	    uHigh = 0.0;
 	}
         else
         {
-            uHigh = (pvHigh - fgmCV2_[lineHigh1])/(fgmCV2_[lineHigh2] - fgmCV2_[lineHigh1]);
+           uHigh = (pvHigh - fgmCV2_[lineHigh1])/(fgmCV2_[lineHigh2] - fgmCV2_[lineHigh1]);
         }
     }
+
     //- Calculate interpolated value for given control variable values
 
     if (uSpecial == 1)
     {
-    interpolatedValue = (1-uLow) * fgmData_[lineLow1][varI]
-                      +    uHigh  * fgmData_[lineHigh1][varI];
+    interpolatedValue = (1.0-uLow) * fgmData_[lineLow1][varI]
+                      +    uHigh   * fgmData_[lineHigh2][varI];
 
     // lineLow1 = lineHigh1 and lineLow2 = lineHigh2 in this case
     // as well as uLow = uHigh
@@ -622,10 +622,10 @@ Foam::scalar Foam::fanzyLookUp::interpolate2D
     }
     else
     {
-    interpolatedValue = (1-t) * (1-uLow)     * fgmData_[lineLow1][varI]
-                      +    t  *   uLow       * fgmData_[lineLow2][varI]
-                      +    t  * (1 - uHigh)  * fgmData_[lineHigh1][varI]
-                      + (1-t) *   uHigh      * fgmData_[lineHigh2][varI];
+    interpolatedValue = (1.0-t) * (1.0-uLow)     * fgmData_[lineLow1][varI]
+                      +    t  *   uLow           * fgmData_[lineLow2][varI]
+                      +    t  * (1.0 - uHigh)    * fgmData_[lineHigh1][varI]
+                      + (1.0-t) *   uHigh        * fgmData_[lineHigh2][varI];
     }
 
     return interpolatedValue;

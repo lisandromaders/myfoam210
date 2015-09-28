@@ -42,18 +42,18 @@
         thermo.rho()
     );
 
-    volScalarField Dt
-    (
-     	IOobject
-        (
-            "Dt",
-            runTime.timeName(),
-            mesh,
-            IOobject::READ_IF_PRESENT,
-            IOobject::AUTO_WRITE
-        ),
-	thermo.Dt()
-    );
+   volScalarField Dt
+   (
+    	IOobject
+       (
+           "Dt",
+           runTime.timeName(),
+           mesh,
+           IOobject::READ_IF_PRESENT,
+           IOobject::AUTO_WRITE
+       ),
+       thermo.Dt()
+   );
 
     volScalarField kappa
     (
@@ -81,7 +81,6 @@
         ),
         mesh
     );
-
 
     #include "compressibleCreatePhi.H"
 

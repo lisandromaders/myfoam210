@@ -5,8 +5,8 @@ solve
       fvm::ddt(rho, pv)
     + fvm::div(phi, pv)
     - fvm::laplacian(Dt, pv)
-    ==
-      fgmTable.sourcePV2D(zt,pv)
+   ==
+     fgmTable.sourcePV2D(zt,pv)
     
 );
 
