@@ -106,20 +106,6 @@ public:
 	{
 		return Dt_;
 	}
-
-
-        // Fields derived from thermodynamic state variables
-/*
-            //- Heat capacity at constant pressure for patch [J/kg/K]
-            tmp<scalarField> Cp
-            (
-                const scalarField& T,
-                const label patchi
-            ) const;
-
-            //- Heat capacity at constant pressure [J/kg/K]
-            tmp<volScalarField> Cp() const;
-*/
 };
 
 

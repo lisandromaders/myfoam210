@@ -84,57 +84,6 @@ void Foam::fanzyLookUp::writeFgmFile(const fileName outputName)
     os.flush();
 }
 
-
-void Foam::fanzyLookUp::writeScalePVFile(const fileName outputName)
-{
-    //- Initialize output stream
-    OFstream os(outputName);
-    
-    //- Set the width of field for integer and floats
-    label intWidth = 4, floatWidth = 22;
-    
-    //- Set the write precision
-    os.precision(14);
-    
-    //- Set the write format (scientific: 0.123e+00)
-    os.setf(std::ios::scientific); 
-
-    Info<< "fanzyLookUp: Write out ScalePV table to: " 
-        << outputName << nl << endl;
-    
-    //- Write file header
-    os  <<
-        "/*--------------------------------*- C++ "
-        "-*----------------------------------*\\\n"
-        "|                  Do not use as input-file for simulations!"
-        "                  |\n"
-        "|         Only intended to verify the reading of the ScalePV table!"
-        "               |\n"
-        "\\*-----------------------------------------"
-        "----------------------------------*/\n";
-    //- Write ScalePV header
-    os << "MINIMUM- AND MAXIMUM VALUES FOR REACTION PROGRESS VARIABLE" << nl
-       << nl
-       << "[NUMBER_FLAMELETS]" << nl;
-    os.width(intWidth);
-    os << scalePVTable_[0].size() << nl
-       << "[DATA]" << nl;
-    
-    //- Write ScalePV data
-    forAll(scalePVTable_[0], i)
-    {
-        os.width(floatWidth);
-        os << scalePVTable_[0][i] << ' ';
-        os.width(floatWidth);
-        os << scalePVTable_[1][i] << ' ';
-        os.width(floatWidth);
-        os << scalePVTable_[2][i]
-           << nl;
-    }
-    os.flush();
-}
-
-
 void Foam::fanzyLookUp::writeFgmFileOpenfoam()
 {
     Info<< "fanzyLookUp: Write out FGM table in OpenFOAM format." << endl;

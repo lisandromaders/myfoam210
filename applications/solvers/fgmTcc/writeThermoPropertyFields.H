@@ -12,24 +12,24 @@ if (fgmTable.debugOutput())
             IOobject::NO_READ,
             IOobject::NO_WRITE
         ),
-        thermo.Cp()
+        fgmTable.getField2D(zt,pv,fgmThermoTransportIndices[2])
     );
     CpDebug.write();
 
-    Info<< "Writing psi" << endl;
-    volScalarField psiDebug
+    Info<< "Writing kappa" << endl;
+    volScalarField kappaDebug
     (
         IOobject
         (
-            "psi",
+            "kappa",
             runTime.timeName(),
             mesh,
             IOobject::NO_READ,
             IOobject::NO_WRITE
         ),
-        thermo.psi()
+        fgmTable.getField2D(zt,pv,fgmThermoTransportIndices[3])
     );
-    psiDebug.write();
+    kappaDebug.write();
 
     Info<< "Writing mu" << endl;
     volScalarField muDebug
@@ -46,36 +46,6 @@ if (fgmTable.debugOutput())
     );
     muDebug.write();
 
-//   Info<< "Writing Dt" << endl;
-//   volScalarField DtDebug
-//   (
-//       IOobject
-//       (
-//           "Dt",
-//           runTime.timeName(),
-//           mesh,
-//           IOobject::NO_READ,
-//           IOobject::NO_WRITE
-//       ),
-//       thermo.Dt()
-//   );
-//   DtDebug.write();
-
-//   Info<< "Writing kappa" << endl;
-//   volScalarField kappaDebug
-//   (
-//       IOobject
-//       (
-//           "kappa",
-//           runTime.timeName(),
-//           mesh,
-//           IOobject::NO_READ,
-//           IOobject::NO_WRITE
-//       ),
-//       thermo.kappa()
-//   );
-//    kappaDebug.write();
-
     Info<< "Writing rho" << endl;
     volScalarField rhoDebug
     (
@@ -90,4 +60,19 @@ if (fgmTable.debugOutput())
         thermo.rho()
     );
     rhoDebug.write();
+
+   Info<< "Writing Dt" << endl;
+   volScalarField DtDebug
+   (
+       IOobject
+       (
+           "Dt",
+           runTime.timeName(),
+           mesh,
+           IOobject::NO_READ,
+           IOobject::NO_WRITE
+       ),
+       thermo.Dt()
+   );
+   DtDebug.write();
 }

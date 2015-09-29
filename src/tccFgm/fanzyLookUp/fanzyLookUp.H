@@ -78,13 +78,7 @@ protected:
         
         //- Filename of the FGM table
         const fileName fgmFile_;
-        
-        //- Switch scaling of CV2 as function of CV1 on/off
-        const Switch scalePV_;
 
-        //- Filename of the table to scale CV2 as function of CV1
-        const fileName scalePVFile_;
-        
         //- Index of sourcePV
         const label sourcePVindex_;
         
@@ -114,15 +108,8 @@ protected:
           //- Max. value of Control Variable (CV) 2
           scalar maxCV2_;
 
-//         //- FGM data table
-//         List<List<List<scalar> > > fgmData_;
-
           //- FGM data table
           List<List<scalar> >  fgmData_;
-          
-          //- Scale CV2 table
-          List<List<scalar> >  scalePVTable_;
-          
           
     // Protected Member Functions
 
@@ -132,13 +119,6 @@ protected:
         //- Read FGM table from file
         void readFgmFile(const fileName);
 
-        //- Read ScalePV table from file
-        void readScalePVFile(const fileName);
-        
-        //- Scale the Progress Variable from real value to [0...1]
-        scalar scalePV(const scalar, const scalar) const;
-        
-        
 public:
 
     //- Runtime type information
@@ -204,21 +184,11 @@ public:
             const scalar,
             const label
         ) const;
-        
-        //- Get a field with the scaledPV values
-        tmp<volScalarField> getScaledPV
-        (
-            const volScalarField& foamCV1,
-            const volScalarField& foamCV2
-        ) const;
-        
+
     // Auxiliary Functions
         
         //- Write FGM table to file
         void writeFgmFile(const fileName);
-        
-        //- Write ScalePV table to file
-        void writeScalePVFile(const fileName);
         
         //- Write FGM table to files in OpenFOAM format
         void writeFgmFileOpenfoam();

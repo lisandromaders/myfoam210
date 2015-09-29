@@ -57,9 +57,6 @@ Foam::fanzyLookUp::fanzyLookUp
     debugOutput_(lookup("debugOutput")),
     
     fgmFile_(fileName(lookup("fgmFile")).expand()),
-
-    scalePV_(lookup("scalePV")),
-    scalePVFile_(fileName(lookup("scalePVFile")).expand()),
     sourcePVindex_(readLabel(lookup("sourcePVindex")))
 {
     Info<< "fanzyLookUp: FGM file = " << fgmFile_ << endl;
@@ -68,15 +65,6 @@ Foam::fanzyLookUp::fanzyLookUp
     fileName fgmTableOut = path()/"FGM.out";
 //     fileName fgmTableOut = "FGMTable.out";
     writeFgmFile(fgmTableOut);
-    
-    // Read and write the ScalePV table if switch 'scalePV' is 'on'
-    if (scalePV_)
-    {
-        readScalePVFile(scalePVFile_);
-        fileName scalePVTableOut = path()/"ScalePV.out";
-//         fileName scalePVTableOut = "ScalePV.out";
-        writeScalePVFile(scalePVTableOut);
-    }
 }
 
 
@@ -247,152 +235,6 @@ void Foam::fanzyLookUp::readFgmFile(const fileName inputName)
          << endl;
 }
 
-
-/*---------------------------------------------------------------------------*\
-MINIMUM- AND MAXIMUM VALUES FOR REACTION PROGRESS VARIABLE
-
-[NUMBER_FLAMELETS]
- 251
-[DATA]
-  <MixtureFraction>   <PVmin>   <PVmax>
-\*---------------------------------------------------------------------------*/
-void Foam::fanzyLookUp::readScalePVFile(const fileName inputName)
-{
-    IFstream is(inputName);
-    label nFlamelets;
-    
-    if (is.good())
-    {
-        Info<< "fanzyLookUp: Read ScalePV file..." << endl;
-    }
-    else
-    {
-        FatalErrorIn
-        (
-            "fanzyLookUp::readScalePVFile(const fileName& inputName)"
-        )
-        << "cannot read " << is.name() << abort(FatalError);
-    }
-
-    //- Read header
-    readToNewline(is);                       // MINIMUM- AND MAXIMUM VALUES FOR REACTION PROGRESS VARIABLE
-    readToNewline(is);                       // 
-    readToNewline(is);                       // [NUMBER_FLAMELETS]
-    is.read(nFlamelets); readToNewline(is);  // <nFlamelets>
-    readToNewline(is);                       // [DATA]
-    
-    /* Initialize global 2D array
-     * ==========================
-     * [ Dim 1 x        Dim 2  ] = 
-     * [     3 x (Size of CV1) ]
-     */
-    scalePVTable_ = List<List<scalar> >(3,List<scalar>(nFlamelets));
-
-    //- Check dimensions matching of CV1 in FGM-file and ScalePV-file
-    if (nFlamelets == nFgmCV1_)
-    {
-        Info << "                   Number of flamelets: " << nFlamelets << nl
-             << endl;
-    }
-    else
-    {
-        FatalErrorIn
-        (
-            "fanzyLookUp::readScalePVFile(const fileName& inputName)"
-        )
-        << "Dimension mismatch of " << is.name() << " and " << fgmFile_ << " ."
-        << abort(FatalError);
-    }
-
-    //- Read scaling data
-    forAll(scalePVTable_[0], i)
-    {
-        forAll(scalePVTable_, j)
-        {
-            is.read(scalePVTable_[j][i]);
-        }
-        readToNewline(is);
-    }
-}
-
-
-Foam::scalar Foam::fanzyLookUp::scalePV
-(
-    const scalar CV1,
-    const scalar CV2
-) const
-{
-    //- Find lower index for CV1 and set the higher index
-    label lo  = findLower(scalePVTable_[0], CV1), hi = lo+1;
-    scalar CV2min, CV2max;
-    if (scalePVTable_[0][hi] == CV1)
-    {
-        //- If we have a tabulated value no interpolation...
-        CV2min = scalePVTable_[1][hi];
-        CV2max = scalePVTable_[2][hi];
-    }
-    else
-    {
-        //- ... else do linear interpolation.
-        CV2min = scalePVTable_[1][lo]
-             + (scalePVTable_[1][hi]-scalePVTable_[1][lo])
-             / (scalePVTable_[0][hi]-scalePVTable_[0][lo])
-             * (CV1                  -scalePVTable_[0][lo]);
-        CV2max = scalePVTable_[2][lo]
-             + (scalePVTable_[2][hi]-scalePVTable_[2][lo])
-             / (scalePVTable_[0][hi]-scalePVTable_[0][lo])
-             * (CV1                  -scalePVTable_[0][lo]);
-    }
-    //- scaledPV = (unscaledPV - PVmin(Z)) / (PVmax(Z) - PVmin(Z))
-    return min((CV2 - CV2min) / max(CV2max - CV2min, SMALL), scalar(1));
-}
-
-
-Foam::tmp<Foam::volScalarField> Foam::fanzyLookUp::getScaledPV
-(
-    const volScalarField& foamCV1,
-    const volScalarField& foamCV2
-) const
-{
-    tmp<volScalarField> tScaledPV
-    (
-        new volScalarField
-        (
-            IOobject
-            (
-                "scaledPV",
-                mesh_.time().timeName(),
-                mesh_,
-                IOobject::NO_READ,
-                IOobject::NO_WRITE
-            ),
-            mesh_,
-            dimensionedScalar("zero", dimless, 0.0)
-        )
-    );
-
-    volScalarField& scaledPV = tScaledPV();
-
-    forAll(foamCV1, cellI)
-    {
-        scaledPV[cellI] = scalePV(foamCV1[cellI],foamCV2[cellI]);
-    }
-
-    forAll(foamCV1.boundaryField(), patchi)
-    {
-        const fvPatchScalarField& pFoamCV1 = foamCV1.boundaryField()[patchi];
-        fvPatchScalarField& pScaledPV = scaledPV.boundaryField()[patchi];
-
-        forAll(pFoamCV1, faceI)
-        {
-            pScaledPV[faceI] = scalePV(foamCV1[faceI],foamCV2[faceI]);
-        }
-    }
-
-    return tScaledPV;
-}
-
-
 Foam::tmp<Foam::volScalarField> Foam::fanzyLookUp::sourcePV2D
 (
     const volScalarField& foamCV1,
@@ -481,25 +323,12 @@ Foam::scalar Foam::fanzyLookUp::getValue2D
     const label varI
 ) const
 {
-    if(scalePV_)
-    {
-        scalar foamCV2s = scalePV(foamCV1, foamCV2);
-        return interpolate2D
-               (
-                   min(foamCV1,maxCV1_),
-                   min(foamCV2s,maxCV2_),
-                   varI
-               );
-    }
-    else
-    {
-        return interpolate2D
-               (
-                   min(foamCV1,maxCV1_),
-                   min(foamCV2,maxCV2_),
-                   varI
-               );
-    }
+    return interpolate2D
+           (
+               min(foamCV1,maxCV1_),
+               min(foamCV2,maxCV2_),
+               varI
+           );
 }
 
 
@@ -511,6 +340,7 @@ Foam::scalar Foam::fanzyLookUp::interpolate2D
 ) const
 {
     scalar interpolatedValue;
+
     /*
     ------------------------------------------------------------------------------------------
     	MINHA TENTATIVA DE IMPLEMENTACAO, TENTANDO LINKAR COM O QUE JA EXISTE..
