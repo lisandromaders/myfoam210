@@ -21,8 +21,7 @@
     );
     basicPsiThermo& thermo = pThermo();
 */
-    volScalarField& p = thermo.p();
-    const volScalarField& psi = thermo.psi();
+//    volScalarField& p = thermo.p();
 
     dimensionedScalar fanzy
     (
@@ -44,6 +43,20 @@
         mesh
     );
 
+//Info<< "Reading/calculating face flux field phi\n" << endl;
+//surfaceScalarField phi
+//(
+//    IOobject
+//    (
+//	"phi",
+//	runTime.timeName(),
+//	mesh,
+//	IOobject::READ_IF_PRESENT,
+//	IOobject::AUTO_WRITE
+//    ),
+//    linearInterpolate(rho*U) & mesh.Sf()
+//);
+
     #include "compressibleCreatePhi.H"
 
     dimensionedScalar rhoMax(pimple.dict().lookup("rhoMax"));
@@ -61,8 +74,8 @@
         )
     );
 
-    Info<< "Creating field dpdt\n" << endl;
-    volScalarField dpdt("dpdt", fvc::ddt(p));
+//   Info<< "Creating field dpdt\n" << endl;
+//   volScalarField dpdt("dpdt", fvc::ddt(p));
 
-    Info<< "Creating field kinetic energy K\n" << endl;
-    volScalarField K("K", 0.5*magSqr(U));
+//  Info<< "Creating field kinetic energy K\n" << endl;
+//  volScalarField K("K", 0.5*magSqr(U));

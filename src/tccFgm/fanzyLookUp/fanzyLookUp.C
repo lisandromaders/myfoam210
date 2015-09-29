@@ -282,7 +282,8 @@ Foam::tmp<Foam::volScalarField> Foam::fanzyLookUp::getField2D
         (
             IOobject
             (
-                "fgm_" + fgmVariableNames_[varI+2],
+//                "fgm_" + fgmVariableNames_[varI+2],
+                "fgm_" + fgmVariableNames_[varI],
                 mesh_.time().timeName(),
                 mesh_,
                 IOobject::NO_READ,
