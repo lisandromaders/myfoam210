@@ -63,6 +63,10 @@ hPsiFanzy thermo
                 );
 
 const volScalarField& T = thermo.T(); 
+const volScalarField& rho = thermo.rho(); 
+//const volScalarField& kappa = thermo.kappa(); 
+//const volScalarField& Cp = fgmTable.getField2D(zt,pv,fgmThermoTransportIndices[2]);
+const volScalarField& Dt = thermo.Dt(); 
 
 {
     Info<< "### Write initial temperature field ###" << endl;
@@ -80,7 +84,65 @@ const volScalarField& T = thermo.T();
     );
     Tinit.write();
 
+    Info<< "### Write initial density field ###" << endl;
+    volScalarField rhoinit
+    (
+        IOobject
+        (
+            "rhoinit",
+            runTime.timeName(),
+            mesh,
+            IOobject::NO_READ,
+            IOobject::NO_WRITE
+        ),
+        rho
+    );
+    rhoinit.write();
 
+//   Info<< "### Write initial kappa field ###" << endl;
+//   volScalarField kappainit
+//   (
+//       IOobject
+//       (
+//           "kappainit",
+//           runTime.timeName(),
+//           mesh,
+//           IOobject::NO_READ,
+//           IOobject::NO_WRITE
+//       ),
+//       kappa
+//   );
+//   kappainit.write();
+
+//   Info<< "### Write initial Cp field ###" << endl;
+//   volScalarField Cpinit
+//   (
+//       IOobject
+//       (
+//           "Cpinit",
+//           runTime.timeName(),
+//           mesh,
+//           IOobject::NO_READ,
+//           IOobject::NO_WRITE
+//       ),
+//       Cp
+//   );
+//   Cpinit.write();
+
+    Info<< "### Write initial Dt field ###" << endl;
+    volScalarField Dtinit
+    (
+        IOobject
+        (
+            "Dtinit",
+            runTime.timeName(),
+            mesh,
+            IOobject::NO_READ,
+            IOobject::NO_WRITE
+        ),
+        Dt
+    );
+    Dtinit.write();
 
   Info<< "### Initial T min / max = " << min(T).value() << " / "
         << max(T).value() << endl;

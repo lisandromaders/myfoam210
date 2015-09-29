@@ -33,10 +33,8 @@ namespace Foam
 void Foam::hPsiFanzy::calculate()
 {
     scalarField& TCells = this->T_.internalField();
-    scalarField& psiCells = this->psi_.internalField();
     scalarField& rhoCells = this->rho_.internalField();
     scalarField& muCells = this->mu_.internalField();
-    scalarField& kappaCells = this->kappa_.internalField();
     scalarField& DtCells = this->Dt_.internalField();
 
     const scalarField& foamCV1Cells = foamCV1_.internalField();
@@ -51,9 +49,6 @@ void Foam::hPsiFanzy::calculate()
                           fgmThermoTransportIndices_[1]
                       );
         
-        // psi = 1.0/(R*T);
-       psiCells[celli] = 1.0/(TCells[celli]*208.0);
-
         rhoCells[celli] = fgmTable_.getValue2D
                          (
                              foamCV1Cells[celli],
@@ -75,22 +70,20 @@ void Foam::hPsiFanzy::calculate()
                              fgmThermoTransportIndices_[2]
                          );
 
-        kappaCells[celli] = fgmTable_.getValue2D
+        scalar kappatab = fgmTable_.getValue2D
                          (
                              foamCV1Cells[celli],
                              foamCV2Cells[celli],
                              fgmThermoTransportIndices_[3]
                          );
 
-        DtCells[celli] = kappaCells[celli]/Cptab;
+        DtCells[celli] = kappatab/Cptab;
     }
 
     forAll(T_.boundaryField(), patchi)
     {
         fvPatchScalarField& pT = this->T_.boundaryField()[patchi];
-        fvPatchScalarField& ppsi = this->psi_.boundaryField()[patchi];
         fvPatchScalarField& prho = this->rho_.boundaryField()[patchi];
-        fvPatchScalarField& pkappa = this->kappa_.boundaryField()[patchi];
         fvPatchScalarField& pmu = this->mu_.boundaryField()[patchi];
         fvPatchScalarField& pDt = this->Dt_.boundaryField()[patchi];
 
@@ -101,15 +94,12 @@ void Foam::hPsiFanzy::calculate()
         {
             forAll(pT, facei)
             {
-// deletei o Ttab, se der erro verificar se eh isso aqui. Se compilar ok, deletar!
                pT[facei] = fgmTable_.getValue2D
                                 (
                                     pfoamCV1[facei],
                                     pfoamCV2[facei],
                                     fgmThermoTransportIndices_[1]
                                 );
-
-               ppsi[facei] = 1.0/(pT[facei]*208.0);
 
                 prho[facei] = fgmTable_.getValue2D
                                 (
@@ -125,7 +115,7 @@ void Foam::hPsiFanzy::calculate()
                                     fgmThermoTransportIndices_[4]
                                 );
 
-                pkappa[facei] = fgmTable_.getValue2D
+                scalar pkappatab = fgmTable_.getValue2D
                                 (
                                     pfoamCV1[facei],
                                     pfoamCV2[facei],
@@ -139,7 +129,7 @@ void Foam::hPsiFanzy::calculate()
                                     fgmThermoTransportIndices_[2]
                                 );
 
-                pDt[facei] = pkappa[facei]/pCptab;
+                pDt[facei] = pkappatab/pCptab;
 
             }
         }
@@ -156,8 +146,6 @@ void Foam::hPsiFanzy::calculate()
 
                 pT[facei] = Ttab;
 
-               ppsi[facei] = 1.0/(pT[facei]*208.0);
-
                 prho[facei] = fgmTable_.getValue2D
                                 (
                                     pfoamCV1[facei],
@@ -172,7 +160,7 @@ void Foam::hPsiFanzy::calculate()
                                     fgmThermoTransportIndices_[4]
                                 );
 
-                pkappa[facei] = fgmTable_.getValue2D
+                scalar pkappatab = fgmTable_.getValue2D
                                 (
                                     pfoamCV1[facei],
                                     pfoamCV2[facei],
@@ -185,7 +173,7 @@ void Foam::hPsiFanzy::calculate()
                                     pfoamCV2[facei],
                                     fgmThermoTransportIndices_[2]
                                 );
-                pDt[facei] = pkappa[facei]/pCptab;
+                pDt[facei] = pkappatab/pCptab;
                              
             }
         }
@@ -204,8 +192,6 @@ Foam::hPsiFanzy::hPsiFanzy
 :
     basicPsiThermo(mesh),
 
-//INICIALIZAR MINHAS NOVAS VARIAVEIS NA ORDEM!
-
     rho_
     (
         IOobject
@@ -220,33 +206,19 @@ Foam::hPsiFanzy::hPsiFanzy
         dimDensity
     ),
 
-    kappa_
-    (
-        IOobject
-        (
-            "kappa",
-            mesh.time().timeName(),
-            mesh,
-            IOobject::NO_READ,
-            IOobject::AUTO_WRITE
-        ),
-        mesh,
-        dimEnergy/dimTime/dimLength/dimTemperature
-    ),
-
-    Dt_
-    (
-        IOobject
-        (
-            "Dt",
-            mesh.time().timeName(),
-            mesh,
-            IOobject::NO_READ,
-            IOobject::AUTO_WRITE
-        ),
-        mesh,
-        dimensionSet(1, -1, -1, 0, 0)
-    ),
+   Dt_
+   (
+       IOobject
+       (
+           "Dt",
+           mesh.time().timeName(),
+           mesh,
+           IOobject::NO_READ,
+           IOobject::AUTO_WRITE
+       ),
+       mesh,
+       dimensionSet(1, -1, -1, 0, 0)
+   ),
 
     fgmTable_(fanzyLookUp),
     foamCV1_(foamCV1),
@@ -261,7 +233,6 @@ Foam::hPsiFanzy::hPsiFanzy
 
     forAll(TCells, celli)
     {
-        // Initialize enthalpy and temperature with values from the FGM table
         TCells[celli] = fgmTable_.getValue2D
                         (
                             foamCV1Cells[celli],
@@ -282,13 +253,6 @@ Foam::hPsiFanzy::hPsiFanzy
         {
             forAll(pT, facei)
             {
-//ACHO QUE AQUI DEVERIA SER pT[facei] AO INVES DE scalar Ttab!!!! VERIFICAR O QUE ISTO ESTA FAZENDO E DEBUGAR..
-               //scalar Ttab = fgmTable_.getValue2D
-               //                (
-               //                    pfoamCV1[facei],
-               //                    pfoamCV2[facei],
-               //                    fgmThermoTransportIndices_[1]
-               //                );
                 pT[facei] = fgmTable_.getValue2D
                                 (
                                     pfoamCV1[facei],
@@ -313,22 +277,23 @@ Foam::hPsiFanzy::hPsiFanzy
 
     // Correct enthalpy and temperature boundary conditions after initilisation
     T_.correctBoundaryConditions();
-   
+
+/*   
     // With the changes made in the fanzyLookUp class the following lines did not work anymore. Probably, the function dataNames() was created
     // to deal with the old array dimensions.. When everything is compiing and running fine I will take a look on this.
  
-   //Info << "dataFieldName[rho] = "
-   //     << fgmTable_.dataNames()[fgmThermoTransportIndices_[0]] << nl
-   //     << "dataFieldName[T] = "
-   //     << fgmTable_.dataNames()[fgmThermoTransportIndices_[1]] << nl
-   //     << "dataFieldName[Cp] = "
-   //     << fgmTable_.dataNames()[fgmThermoTransportIndices_[2]] << nl
-   //     << "dataFieldName[kappa] = "
-   //     << fgmTable_.dataNames()[fgmThermoTransportIndices_[3]] << nl
-   //     << "dataFieldName[mu] = "
-   //     << fgmTable_.dataNames()[fgmThermoTransportIndices_[4]] << nl
-   //     << endl;
-    
+   Info << "dataFieldName[rho] = "
+        << fgmTable_.dataNames()[fgmThermoTransportIndices_[0]] << nl
+        << "dataFieldName[T] = "
+        << fgmTable_.dataNames()[fgmThermoTransportIndices_[1]] << nl
+        << "dataFieldName[Cp] = "
+        << fgmTable_.dataNames()[fgmThermoTransportIndices_[2]] << nl
+        << "dataFieldName[kappa] = "
+        << fgmTable_.dataNames()[fgmThermoTransportIndices_[3]] << nl
+        << "dataFieldName[mu] = "
+        << fgmTable_.dataNames()[fgmThermoTransportIndices_[4]] << nl
+        << endl;
+*/    
     calculate();
 
     // Switch on saving old time
@@ -362,7 +327,7 @@ void Foam::hPsiFanzy::correct()
     }
 }
 
-
+/*
 Foam::tmp<Foam::scalarField> Foam::hPsiFanzy::Cp
 (
     const scalarField& T,
@@ -445,6 +410,7 @@ Foam::tmp<Foam::volScalarField> Foam::hPsiFanzy::Cp() const
 
     return tCp;
 }
+*/
 
 
 // ************************************************************************* //

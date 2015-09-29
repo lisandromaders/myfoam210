@@ -29,44 +29,6 @@
        	transportProperties.lookup("fanzy")
     );
 
-    volScalarField rho
-    (
-        IOobject
-        (
-            "rho",
-            runTime.timeName(),
-            mesh,
-            IOobject::READ_IF_PRESENT,
-            IOobject::AUTO_WRITE
-        ),
-        thermo.rho()
-    );
-
-   volScalarField Dt
-   (
-    	IOobject
-       (
-           "Dt",
-           runTime.timeName(),
-           mesh,
-           IOobject::READ_IF_PRESENT,
-           IOobject::AUTO_WRITE
-       ),
-       thermo.Dt()
-   );
-
-    volScalarField kappa
-    (
-     	IOobject
-        (
-            "kappa",
-            runTime.timeName(),
-            mesh,
-            IOobject::READ_IF_PRESENT,
-            IOobject::AUTO_WRITE
-        ),
-	thermo.kappa()
-    );
 
     Info<< "Reading field U\n" << endl;
     volVectorField U

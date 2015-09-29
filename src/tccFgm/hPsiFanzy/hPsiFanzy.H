@@ -49,8 +49,6 @@ class hPsiFanzy
 {
 	volScalarField rho_;
 
-        volScalarField kappa_;
-
         volScalarField Dt_;
 
         //- Table look up routines
@@ -104,28 +102,14 @@ public:
 		return rho_;
 	}
 
-	tmp<volScalarField> kappa() const
-	{
-		return kappa_;
-	}
-
 	tmp<volScalarField> Dt() const
 	{
-		return kappa()/Cp();
+		return Dt_;
 	}
 
-	tmp<volScalarField> foamCV1() const
-	{
-		return foamCV1_;
-	}
-
-	tmp<volScalarField> foamCV2() const
-	{
-		return foamCV2_;
-	}
 
         // Fields derived from thermodynamic state variables
-
+/*
             //- Heat capacity at constant pressure for patch [J/kg/K]
             tmp<scalarField> Cp
             (
@@ -135,6 +119,7 @@ public:
 
             //- Heat capacity at constant pressure [J/kg/K]
             tmp<volScalarField> Cp() const;
+*/
 };
 
 

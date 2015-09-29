@@ -61,20 +61,20 @@ if (fgmTable.debugOutput())
 //   );
 //   DtDebug.write();
 
-    Info<< "Writing kappa" << endl;
-    volScalarField kappaDebug
-    (
-        IOobject
-        (
-            "kappa",
-            runTime.timeName(),
-            mesh,
-            IOobject::NO_READ,
-            IOobject::NO_WRITE
-        ),
-        thermo.kappa()
-    );
-    kappaDebug.write();
+//   Info<< "Writing kappa" << endl;
+//   volScalarField kappaDebug
+//   (
+//       IOobject
+//       (
+//           "kappa",
+//           runTime.timeName(),
+//           mesh,
+//           IOobject::NO_READ,
+//           IOobject::NO_WRITE
+//       ),
+//       thermo.kappa()
+//   );
+//    kappaDebug.write();
 
     Info<< "Writing rho" << endl;
     volScalarField rhoDebug
