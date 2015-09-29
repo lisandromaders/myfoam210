@@ -5,5 +5,6 @@ fvScalarMatrix ztEqn
     - fvm::laplacian(Dt, zt)
 );
 
+ztEqn.relax();
 ztEqn.solve();
 

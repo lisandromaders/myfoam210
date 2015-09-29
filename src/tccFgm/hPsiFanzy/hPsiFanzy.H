@@ -99,11 +99,13 @@ public:
 
 	virtual tmp<volScalarField> rho() const
 	{
+		Info << " Estou usando rho() de hPsiFanzy " << endl;
 		return rho_;
 	}
 
 	tmp<volScalarField> Dt() const
 	{
+		Info << " Estou usando Dt() de hPsiFanzy " << endl;
 		return Dt_;
 	}
 };

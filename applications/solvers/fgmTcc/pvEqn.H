@@ -19,6 +19,7 @@ fvScalarMatrix pvEqn
     
 );
 
+pvEqn.relax();
 pvEqn.solve();
 
 //pv.max(0.0);

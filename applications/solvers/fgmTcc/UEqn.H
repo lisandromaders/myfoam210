@@ -11,10 +11,14 @@ UEqn().relax();
 
 volScalarField rAU(1.0/UEqn().A());
 
-/*
+
 if (pimple.momentumPredictor())
 {
-    solve(UEqn() == -fvc::grad(p));
-    K = 0.5*magSqr(U);
+    solve(UEqn());
+//    solve(UEqn() == -fvc::grad(p));
+//    K = 0.5*magSqr(U);
 }
-*/
+else
+{
+    solve(UEqn());
+}
