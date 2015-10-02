@@ -2,6 +2,6 @@
 # 1 "<built-in>"
 # 1 "<command-line>"
 # 1 "files"
-tccFoam.C
+tccSimple.C
 
-EXE = $(FOAM_USER_APPBIN)/tccFoam
+EXE = $(FOAM_USER_APPBIN)/tccSimple

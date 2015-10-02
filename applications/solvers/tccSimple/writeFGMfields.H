@@ -10,23 +10,9 @@ volScalarField Tfgm
         IOobject::NO_READ,
         IOobject::NO_WRITE
     ),
-    fgmTable.getField2D(h,pv,fgmThermoTransportIndices[4])
+    fgmTable.getField2D(zt,pv,fgmThermoTransportIndices[1])
 );
 Tfgm.write();
-
-volScalarField hfgm
-(
-    IOobject
-    (
-        "h_fgm",
-        runTime.timeName(),
-        mesh,
-        IOobject::NO_READ,
-        IOobject::NO_WRITE
-    ),
-    fgmTable.getField2D(h,pv,fgmThermoTransportIndices[5])
-);
-hfgm.write();
 
 volScalarField sourcePV
 (
@@ -38,6 +24,7 @@ volScalarField sourcePV
         IOobject::NO_READ,
         IOobject::NO_WRITE
     ),
-    fgmTable.sourcePV2D(h,pv)
+    fgmTable.sourcePV2D(zt,pv)
 );
 sourcePV.write();
+

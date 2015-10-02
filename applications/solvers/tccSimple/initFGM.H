@@ -63,7 +63,9 @@ hPsiFanzy thermo
                 );
 
 const volScalarField& T = thermo.T(); 
-//volScalarField& rho = thermo.rho(); 
+const volScalarField& rho = thermo.rho(); 
+//const volScalarField& kappa = thermo.kappa(); 
+//const volScalarField& Cp = fgmTable.getField2D(zt,pv,fgmThermoTransportIndices[2]);
 const volScalarField& Dt = thermo.Dt(); 
 
 {
@@ -96,6 +98,36 @@ const volScalarField& Dt = thermo.Dt();
         thermo.rho()
     );
     rhoinit.write();
+
+//   Info<< "### Write initial kappa field ###" << endl;
+//   volScalarField kappainit
+//   (
+//       IOobject
+//       (
+//           "kappainit",
+//           runTime.timeName(),
+//           mesh,
+//           IOobject::NO_READ,
+//           IOobject::NO_WRITE
+//       ),
+//       kappa
+//   );
+//   kappainit.write();
+
+//   Info<< "### Write initial Cp field ###" << endl;
+//   volScalarField Cpinit
+//   (
+//       IOobject
+//       (
+//           "Cpinit",
+//           runTime.timeName(),
+//           mesh,
+//           IOobject::NO_READ,
+//           IOobject::NO_WRITE
+//       ),
+//       Cp
+//   );
+//   Cpinit.write();
 
     Info<< "### Write initial Dt field ###" << endl;
     volScalarField Dtinit

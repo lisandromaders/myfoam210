@@ -80,18 +80,13 @@ int main(int argc, char *argv[])
             #include "UEqn.H"
             #include "pvEqn.H"
             #include "ztEqn.H"
-/*
-	COMENTEI A EQUACAO DA PRESSAO POIS NAO QUERO RESOLVELA, VISTO QUE MEU PROBLEMA NAO VARIA A PRESSAO
-*/
 
-
-/*
             // --- Pressure corrector loop
-           while (pimple.correct())
-           {
-               #include "pEqn.H"
-           }
-*/
+         while (pimple.correct())
+         {
+             #include "pEqn.H"
+         }
+
             if (pimple.turbCorr())
             {
                 turbulence->correct();

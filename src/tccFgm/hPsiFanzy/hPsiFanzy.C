@@ -33,6 +33,7 @@ namespace Foam
 void Foam::hPsiFanzy::calculate()
 {
     scalarField& TCells = this->T_.internalField();
+    scalarField& psiCells = this->psi_.internalField();
     scalarField& rhoCells = this->rho_.internalField();
     scalarField& muCells = this->mu_.internalField();
     scalarField& DtCells = this->Dt_.internalField();
@@ -48,6 +49,8 @@ void Foam::hPsiFanzy::calculate()
                           foamCV2Cells[celli],
                           fgmThermoTransportIndices_[1]
                       );
+
+       psiCells[celli] = 1.0/(TCells[celli]*298.0);
         
         rhoCells[celli] = fgmTable_.getValue2D
                          (
@@ -83,6 +86,7 @@ void Foam::hPsiFanzy::calculate()
     forAll(T_.boundaryField(), patchi)
     {
         fvPatchScalarField& pT = this->T_.boundaryField()[patchi];
+        fvPatchScalarField& ppsi = this->psi_.boundaryField()[patchi];
         fvPatchScalarField& prho = this->rho_.boundaryField()[patchi];
         fvPatchScalarField& pmu = this->mu_.boundaryField()[patchi];
         fvPatchScalarField& pDt = this->Dt_.boundaryField()[patchi];
@@ -100,6 +104,8 @@ void Foam::hPsiFanzy::calculate()
                                     pfoamCV2[facei],
                                     fgmThermoTransportIndices_[1]
                                 );
+
+               ppsi[facei] = 1.0/(pT[facei]*298.0);
 
                 prho[facei] = fgmTable_.getValue2D
                                 (
@@ -137,14 +143,14 @@ void Foam::hPsiFanzy::calculate()
         {
             forAll(pT, facei)
             {
-                scalar Ttab = fgmTable_.getValue2D
+                pT[facei] = fgmTable_.getValue2D
                                 (
                                     pfoamCV1[facei],
                                     pfoamCV2[facei],
                                     fgmThermoTransportIndices_[1]
                                 );
 
-                pT[facei] = Ttab;
+               ppsi[facei] = 1.0/(pT[facei]*298.0);
 
                 prho[facei] = fgmTable_.getValue2D
                                 (
@@ -192,19 +198,19 @@ Foam::hPsiFanzy::hPsiFanzy
 :
     basicPsiThermo(mesh),
 
-    rho_
-    (
-        IOobject
-        (
-            "rho",
-            mesh.time().timeName(),
-            mesh,
-            IOobject::NO_READ,
-            IOobject::AUTO_WRITE
-        ),
-        mesh,
-        dimDensity
-    ),
+   rho_
+   (
+       IOobject
+       (
+           "rho",
+           mesh.time().timeName(),
+           mesh,
+           IOobject::NO_READ,
+           IOobject::AUTO_WRITE
+       ),
+       mesh,
+       dimDensity
+   ),
 
    Dt_
    (

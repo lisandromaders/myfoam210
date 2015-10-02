@@ -16,6 +16,21 @@ if (fgmTable.debugOutput())
     );
     CpDebug.write();
 
+    Info<< "Writing psi" << endl;
+    volScalarField psiDebug
+    (
+        IOobject
+        (
+            "psi",
+            runTime.timeName(),
+            mesh,
+            IOobject::NO_READ,
+            IOobject::NO_WRITE
+        ),
+        thermo.psi()
+    );
+    psiDebug.write();
+
     Info<< "Writing kappa" << endl;
     volScalarField kappaDebug
     (

@@ -22,22 +22,18 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Application
-    FANZYfgm
+    scalarTransportFoam
 
 Description
-    Transient solver for laminar or turbulent flow of compressible fluids
-    for HVAC and similar applications met FGM.
-
-    Uses the flexible PIMPLE (PISO-SIMPLE) solution for time-resolved and
-    pseudo-transient simulations.
+    Solves a transport equation for a passive scalar
 
 \*---------------------------------------------------------------------------*/
 
 #include "fvCFD.H"
-#include "basicPsiThermo.H"
+#include "basicPsiThermo.H"       
 #include "turbulenceModel.H"
 #include "bound.H"
-#include "pimpleControl.H"
+#include "simpleControl.H"
 
 #include "fanzyLookUp.H"
 #include "hPsiFanzy.H"
@@ -50,56 +46,36 @@ int main(int argc, char *argv[])
     #include "createTime.H"
     #include "createMesh.H"
     #include "initFGM.H"
-
-    pimpleControl pimple(mesh);
-
     #include "createFields.H"
-    #include "initContinuityErrs.H"
+
+    simpleControl simple(mesh);
 
     // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-    Info<< "\nStarting time loop\n" << endl;
+//   #include "CourantNo.H"
+    #include "compressibleCourantNo.H"
 
-    while (runTime.run())
+    while (simple.loop())
     {
-        #include "readTimeControls.H"
-        #include "compressibleCourantNo.H"
-        #include "setDeltaT.H"
-
-        runTime++;
-
         Info<< "Time = " << runTime.timeName() << nl << endl;
 
-        #include "rhoEqn.H"
-
-        // --- Pressure-velocity PIMPLE corrector loop
-        while (pimple.loop())
+        while (simple.correctNonOrthogonal())
         {
-            #include "UEqn.H"
-            #include "hEqn.H"
-            #include "pvEqn.H"
-//          #include "cv1Eqn.H" // NO transport eqn if cv1 equals enthalpy! 
-
-
-            // --- Pressure corrector loop
-            while (pimple.correct())
-            {
-                #include "pEqn.H"
-            }
-
-            if (pimple.turbCorr())
-            {
-                turbulence->correct();
-            }
+	    Info << " Antes de rhoEqn.H " << endl;
+	    Info << " Escrevendo rho " << rho << endl;
+	    Info << " Escrevendo phi " << phi << endl;
+	    #include "rhoEqn.H"
+	    #include "UEqn.H"
+	    #include "pvEqn.H"
+	    #include "ztEqn.H"
         }
 
-            if (runTime.write())
-            { 
-
+        if (runTime.write())
+        { 
             #include "writeFGMfields.H"
             #include "writeThermoPropertyFields.H"
+        }
 
-            }
         Info<< "ExecutionTime = " << runTime.elapsedCpuTime() << " s"
             << "  ClockTime = " << runTime.elapsedClockTime() << " s"
             << nl << endl;

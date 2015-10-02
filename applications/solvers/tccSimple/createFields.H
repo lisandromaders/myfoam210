@@ -30,19 +30,6 @@
     );
 
 
-    volScalarField rho
-    (
-        IOobject
-        (
-            "rho",
-            runTime.timeName(),
-            mesh,
-            IOobject::READ_IF_PRESENT,
-            IOobject::AUTO_WRITE
-        ),
-        thermo.rho()
-    );
-
     Info<< "Reading field U\n" << endl;
     volVectorField U
     (
@@ -59,8 +46,8 @@
 
     #include "compressibleCreatePhi.H"
 
-   dimensionedScalar rhoMax(pimple.dict().lookup("rhoMax"));
-   dimensionedScalar rhoMin(pimple.dict().lookup("rhoMin"));
+//    dimensionedScalar rhoMax(pimple.dict().lookup("rhoMax"));
+//    dimensionedScalar rhoMin(pimple.dict().lookup("rhoMin"));
 
     Info<< "Creating turbulence model\n" << endl;
     autoPtr<compressible::turbulenceModel> turbulence

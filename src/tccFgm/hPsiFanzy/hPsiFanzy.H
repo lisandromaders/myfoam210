@@ -103,6 +103,12 @@ public:
 		return rho_;
 	}
 
+	virtual volScalarField& rho()
+	{
+		Info << " Estou usando rho() no-const de hPsiFanzy " << endl;
+		return rho_;
+	}
+
 	tmp<volScalarField> Dt() const
 	{
 		Info << " Estou usando Dt() de hPsiFanzy " << endl;

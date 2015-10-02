@@ -1,3 +1,0 @@
-tccFoam.C
-
-EXE = $(FOAM_USER_APPBIN)/tccFoam
