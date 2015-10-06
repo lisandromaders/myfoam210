@@ -30,18 +30,18 @@
     );
 
 
-    volScalarField rho
-    (
-        IOobject
-        (
-            "rho",
-            runTime.timeName(),
-            mesh,
-            IOobject::READ_IF_PRESENT,
-            IOobject::AUTO_WRITE
-        ),
-        thermo.rho()
-    );
+   volScalarField rho
+   (
+       IOobject
+       (
+           "rho",
+           runTime.timeName(),
+           mesh,
+           IOobject::READ_IF_PRESENT,
+           IOobject::AUTO_WRITE
+       ),
+       thermo.rho()
+   );
 
     Info<< "Reading field U\n" << endl;
     volVectorField U

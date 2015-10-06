@@ -348,7 +348,7 @@ Foam::scalar Foam::fanzyLookUp::interpolate2D
     ------------------------------------------------------------------------------------------
     */
 
-    scalar cv1 = MNMX(foamCV1,0.0045,1.0); //pois zt vai de 0 a 1 obrigatoriamente
+    scalar cv1 = MNMX(foamCV1,0.00001,1.0); //pois zt vai de 0 a 1 obrigatoriamente
 
     label wLow = (nFgmCV1_-1)*cv1; // numero do indice do conjunto low
     label wHigh = wLow + 1; // numero do indice do conjunto high
@@ -378,6 +378,12 @@ Foam::scalar Foam::fanzyLookUp::interpolate2D
     label lineLow1 = wLow*nFgmCV2_ + pvLow/deltaPV_low;
     label lineLow2 = lineLow1 + 1;
 
+    if (pvLow == fgmCV2_[lLowMax])
+    {
+	lineLow1 = nFgmCV2_ - 1;
+        lineLow2 = lineLow1;
+    }
+
     if (pvLow == fgmCV2_[lLowMin])
     {
         lineLow2 = lineLow1;
@@ -394,10 +400,6 @@ Foam::scalar Foam::fanzyLookUp::interpolate2D
     scalar t, uLow, uHigh;
     label uSpecial = 0;
 
-    scalar deltaCV1 = 1.0/nFgmCV1_;
-    scalar txmin = deltaCV1*wLow;
-    scalar txmax = deltaCV1*wHigh;
-    
     if (wLow == wHigh)
     {
         uSpecial = 1;
@@ -405,7 +407,7 @@ Foam::scalar Foam::fanzyLookUp::interpolate2D
     }
     else
     {
-        t = (cv1 - txmin)/(txmax - txmin);
+        t = (cv1 - fgmCV1_[lineLow1])/(fgmCV1_[lineHigh1] - fgmCV1_[lineLow1]);
     }
     
     if (pvLow == fgmCV2_[lLowMax])
@@ -453,10 +455,10 @@ Foam::scalar Foam::fanzyLookUp::interpolate2D
     }
     else
     {
-    interpolatedValue = (1.0-t) * (1.0-uLow)     * fgmData_[lineLow1][varI]
-                      +    t  *   uLow           * fgmData_[lineLow2][varI]
-                      +    t  * (1.0 - uHigh)    * fgmData_[lineHigh1][varI]
-                      + (1.0-t) *   uHigh        * fgmData_[lineHigh2][varI];
+        interpolatedValue = (1.0-t) * (1.0-uLow)     * fgmData_[lineLow1][varI]
+                          + (1.0-t) * uLow           * fgmData_[lineLow2][varI]
+                          +    t    * (1.0 - uHigh)  * fgmData_[lineHigh1][varI]
+                          +    t    * uHigh          * fgmData_[lineHigh2][varI];
     }
 
     return interpolatedValue;

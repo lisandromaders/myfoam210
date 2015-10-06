@@ -109,7 +109,7 @@ public:
 		return rho_;
 	}
 
-	tmp<volScalarField> Dt() const
+	tmp<volScalarField> Dt()
 	{
 		Info << " Estou usando Dt() de hPsiFanzy " << endl;
 		return Dt_;

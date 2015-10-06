@@ -63,54 +63,9 @@ hPsiFanzy thermo
                 );
 
 const volScalarField& T = thermo.T(); 
-//volScalarField& rho = thermo.rho(); 
-const volScalarField& Dt = thermo.Dt(); 
+tmp<volScalarField> Dt = thermo.Dt();
 
 {
-    Info<< "### Write initial temperature field ###" << endl;
-    volScalarField Tinit
-    (
-        IOobject
-        (
-            "Tinit",
-            runTime.timeName(),
-            mesh,
-            IOobject::NO_READ,
-            IOobject::NO_WRITE
-        ),
-        T
-    );
-    Tinit.write();
-
-    Info<< "### Write initial density field ###" << endl;
-    volScalarField rhoinit
-    (
-        IOobject
-        (
-            "rhoinit",
-            runTime.timeName(),
-            mesh,
-            IOobject::NO_READ,
-            IOobject::NO_WRITE
-        ),
-        thermo.rho()
-    );
-    rhoinit.write();
-
-    Info<< "### Write initial Dt field ###" << endl;
-    volScalarField Dtinit
-    (
-        IOobject
-        (
-            "Dtinit",
-            runTime.timeName(),
-            mesh,
-            IOobject::NO_READ,
-            IOobject::NO_WRITE
-        ),
-        Dt
-    );
-    Dtinit.write();
 
   Info<< "### Initial T min / max = " << min(T).value() << " / "
         << max(T).value() << endl;

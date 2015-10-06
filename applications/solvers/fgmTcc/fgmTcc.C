@@ -78,6 +78,7 @@ int main(int argc, char *argv[])
         {
 
             #include "UEqn.H"
+	    thermo.correct();
             #include "pvEqn.H"
             #include "ztEqn.H"
 

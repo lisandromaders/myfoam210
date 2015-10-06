@@ -61,21 +61,6 @@ if (fgmTable.debugOutput())
     );
     muDebug.write();
 
-    Info<< "Writing rho" << endl;
-    volScalarField rhoDebug
-    (
-        IOobject
-        (
-            "rho",
-            runTime.timeName(),
-            mesh,
-            IOobject::NO_READ,
-            IOobject::NO_WRITE
-        ),
-        thermo.rho()
-    );
-    rhoDebug.write();
-
    Info<< "Writing Dt" << endl;
    volScalarField DtDebug
    (

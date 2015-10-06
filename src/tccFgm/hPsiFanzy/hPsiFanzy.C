@@ -304,6 +304,8 @@ Foam::hPsiFanzy::hPsiFanzy
 
     // Switch on saving old time
     this->psi_.oldTime();
+    this->rho_.oldTime();
+    this->mu_.oldTime();
 }
 
 
@@ -324,6 +326,8 @@ void Foam::hPsiFanzy::correct()
 
     // force the saving of the old-time values
     this->psi_.oldTime();
+    this->rho_.oldTime();
+    this->mu_.oldTime();
 
     calculate();
 
