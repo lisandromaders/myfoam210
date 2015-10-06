@@ -83,10 +83,10 @@ int main(int argc, char *argv[])
             #include "ztEqn.H"
 
             // --- Pressure corrector loop
-         while (pimple.correct())
-         {
-             #include "pEqn.H"
-         }
+        while (pimple.correct())
+        {
+            #include "pEqn.H"
+        }
 
             if (pimple.turbCorr())
             {
