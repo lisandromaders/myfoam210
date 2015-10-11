@@ -78,9 +78,9 @@ int main(int argc, char *argv[])
         {
 
             #include "UEqn.H"
-	    thermo.correct();
             #include "pvEqn.H"
             #include "ztEqn.H"
+	    thermo.correct();
 
             // --- Pressure corrector loop
         while (pimple.correct())
@@ -101,6 +101,8 @@ int main(int argc, char *argv[])
             #include "writeThermoPropertyFields.H"
 
             }
+
+
         Info<< "ExecutionTime = " << runTime.elapsedCpuTime() << " s"
             << "  ClockTime = " << runTime.elapsedClockTime() << " s"
             << nl << endl;

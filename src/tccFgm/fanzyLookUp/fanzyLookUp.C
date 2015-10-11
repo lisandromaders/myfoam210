@@ -342,126 +342,69 @@ Foam::scalar Foam::fanzyLookUp::interpolate2D
 {
     scalar interpolatedValue;
 
-    /*
-    ------------------------------------------------------------------------------------------
-    	MINHA TENTATIVA DE IMPLEMENTACAO, TENTANDO LINKAR COM O QUE JA EXISTE..
-    ------------------------------------------------------------------------------------------
-    */
-
-    scalar cv1 = MNMX(foamCV1,0.00001,1.0); //pois zt vai de 0 a 1 obrigatoriamente
-
-    label wLow = (nFgmCV1_-1)*cv1; // numero do indice do conjunto low
-    label wHigh = wLow + 1; // numero do indice do conjunto high
-    if (wLow == (nFgmCV1_ - 1))
-    {
-	wHigh = wLow;
-    }
+    label i,k1,k2;
+    scalar cv2ns,cv2min_low,cv2max_low,cv2min_high,cv2max_high,dh_low,dh_high,b1,b2,d1,d2,e1,e2,cv1,cv2ns2,f10,f11,f30,f31,f32,f33;
+    	
+    cv1=MNMX(foamCV1,fgmCV1_[0],fgmCV1_[(nFgmCV1_*nFgmCV2_)-1]);
+    i=MNMX((nFgmCV1_-1.)*cv1,0,nFgmCV1_-2.); 			/* lower index */
+    b1=i/(nFgmCV1_-1.);
+    b2=(i+1.)/(nFgmCV1_-1.);
+    f10=MNMX(((b2-cv1)/(b2-b1)),0.,1.);
+    f11=1.-f10;
     
- 
-    label lLowMin = nFgmCV2_*wLow; // numero da linha de pvMin_low
-    label lLowMax = nFgmCV2_*(wLow+1) - 1; // numero da linha de pvMax_low
+    cv2min_low=fgmCV2_[((i*nFgmCV2_)+1)-1];
+    cv2max_low=fgmCV2_[((i+1)*nFgmCV2_)-1];
+    cv2ns=MNMX(foamCV2,cv2min_low,cv2max_low);
+    dh_low=((cv2max_low-cv2min_low)/(nFgmCV2_-1));
+    k1= MNMX(cv2ns/dh_low,0.0,nFgmCV2_-2);
+    d1=k1*dh_low + cv2min_low;
+    d2=(k1+1)*dh_low+cv2min_low;
+    f30=MNMX(((d2-cv2ns)/(d2-d1)),0.,1.);
+    f31=1.-f30;
     
-    label lHighMin = nFgmCV2_*(wHigh); // numero da linha de pvMin_high
-    label lHighMax = nFgmCV2_*(wHigh)+(nFgmCV2_-1); // numero da linha de pvMax_high
+    cv2min_high=fgmCV2_[(((i+1)*nFgmCV2_)+1)-1];
+    cv2max_high=fgmCV2_[((i+2)*nFgmCV2_)-1];
+    cv2ns2=MNMX(foamCV2,cv2min_high,cv2max_high);
+    dh_high=((cv2max_high-cv2min_high)/(nFgmCV2_-1));
+    k2= MNMX(cv2ns2/dh_high,0.0,nFgmCV2_-2);
+    e1=k2*dh_high + cv2min_high;
+    e2=(k2+1)*dh_high+cv2min_high;
+    f32=MNMX(((e2-cv2ns2)/(e2-e1)),0.,1.); 
+    f33=1.-f32; 
+      
+      
+      
+      /*IN THE CASE OF REACHING THE UPPER LIMIT OF THE MANIFOLD BOTH FACTOR MUST BE SET TO THE UPPER LIMIT:*/
+      /**/
+      if ((k1==nFgmCV2_-2) && (f31==1) && (k2!=nFgmCV2_-2) && (f33!=1))
+      {
+          k2=nFgmCV2_-2; f32=0; f33=1;
+      }
+      /**/
+      else if ((k2==nFgmCV2_-2) && (f33==1) && (k1!=nFgmCV2_-2) && (f31!=1))
+      {
+          k1=nFgmCV2_-2; f30=0; f31=1;
+      }
+      /**/
+      /*IN THE CASE OF REACHING THE LOWER LIMIT OF THE MANIFOLD BOTH FACTOR MUST BE SET TO THE LOWER LIMIT:*/
+      /**/
+      if ((k1==0) && (f30==1) && (k2!=0) && (f32!=1))
+      {
+          k2=0; f32=1;f33=0;
+      }
+      else if ((k2==0) && (f32==1) && (k1!=0) && (f30!=1))
+      {
+         k1=0; f30=1; f31=0;
+      }
+      
+      
+      interpolatedValue  =  f10*f30*fgmData_[ k1   + i   *nFgmCV2_][varI]
+    		       +f10*f31*fgmData_[(k1+1)+ i   *nFgmCV2_][varI]
+    		       +f11*f32*fgmData_[ k2   +(i+1)*nFgmCV2_][varI]
+    		       +f11*f33*fgmData_[(k2+1)+(i+1)*nFgmCV2_][varI];
     
-    scalar pvLow = MNMX(foamCV2,fgmCV2_[lLowMin],fgmCV2_[lLowMax]);
-    scalar pvHigh = MNMX(foamCV2,fgmCV2_[lHighMin],fgmCV2_[lHighMax]);
+    return interpolatedValue; 
 
-    //se nenhum passou de nenhum limite, pvLow=pvHigh
-    
-    scalar deltaPV_low = (fgmCV2_[lLowMax] - fgmCV2_[lLowMin])/nFgmCV2_;
-    scalar deltaPV_high = (fgmCV2_[lHighMax] - fgmCV2_[lHighMin])/nFgmCV2_;
-    
-    
-    // construindo indices globais, que representam as linhas..
-    
-    label lineLow1 = wLow*nFgmCV2_ + pvLow/deltaPV_low;
-    label lineLow2 = lineLow1 + 1;
-
-    if (pvLow == fgmCV2_[lLowMax])
-    {
-	lineLow1 = nFgmCV2_ - 1;
-        lineLow2 = lineLow1;
-    }
-
-    if (pvLow == fgmCV2_[lLowMin])
-    {
-        lineLow2 = lineLow1;
-    }
-
-    label lineHigh1 = wHigh*nFgmCV2_ + pvHigh/deltaPV_high;
-    label lineHigh2 = lineHigh1 + 1;
-
-    if (pvHigh == fgmCV2_[lHighMin])
-    {
-        lineHigh2 = lineHigh1;
-    }
-
-    scalar t, uLow, uHigh;
-    label uSpecial = 0;
-
-    if (wLow == wHigh)
-    {
-        uSpecial = 1;
-        t = 1.0;
-    }
-    else
-    {
-        t = (cv1 - fgmCV1_[lineLow1])/(fgmCV1_[lineHigh1] - fgmCV1_[lineLow1]);
-    }
-    
-    if (pvLow == fgmCV2_[lLowMax])
-    {
-        uLow = 1.0;
-    }
-    else
-    {
-	if (pvLow == fgmCV2_[lLowMin])
-	{
-	    uLow = 0.0;
-	}
-        else
-        {
-           uLow = (pvLow - fgmCV2_[lineLow1])/(fgmCV2_[lineLow2] - fgmCV2_[lineLow1]);
-        }
-    }
-
-    if (pvHigh == fgmCV2_[lHighMax])
-    {
-        uHigh = 1.0;
-    }
-    else
-    {
-	if (pvHigh == fgmCV2_[lHighMin])
-	{
-	    uHigh = 0.0;
-	}
-        else
-        {
-           uHigh = (pvHigh - fgmCV2_[lineHigh1])/(fgmCV2_[lineHigh2] - fgmCV2_[lineHigh1]);
-        }
-    }
-
-    //- Calculate interpolated value for given control variable values
-
-    if (uSpecial == 1)
-    {
-    interpolatedValue = (1.0-uLow) * fgmData_[lineLow1][varI]
-                      +    uHigh   * fgmData_[lineHigh2][varI];
-
-    // lineLow1 = lineHigh1 and lineLow2 = lineHigh2 in this case
-    // as well as uLow = uHigh
-        
-    }
-    else
-    {
-        interpolatedValue = (1.0-t) * (1.0-uLow)     * fgmData_[lineLow1][varI]
-                          + (1.0-t) * uLow           * fgmData_[lineLow2][varI]
-                          +    t    * (1.0 - uHigh)  * fgmData_[lineHigh1][varI]
-                          +    t    * uHigh          * fgmData_[lineHigh2][varI];
-    }
-
-    return interpolatedValue;
 }
 
 
