@@ -1,6 +1,0 @@
-
-    label i = MNMX((nFgmCV1_ - 1)*cv1,0,(nFgmCV1_ - 1)); // wLow limits : 0 - 199
-//    label wHigh = wLow + 1; // numero do indice do conjunto high
-    scalar b1 = i/(nFgmCV1_ - 1.0);
-    scalar b2 = (i + 1.0)/(nFgmCV1_ - 1.0);
-    scalar t = MNMX(((b2 - cv1) / (b2 - b1)),0.0,1.0); 

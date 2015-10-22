@@ -341,52 +341,69 @@ Foam::scalar Foam::fanzyLookUp::interpolate2D
 ) const
 {
     scalar interpolatedValue;
+
+    label i,k1,k2;
+    scalar cv2ns,cv2min_low,cv2max_low,cv2min_high,cv2max_high,dh_low,dh_high,b1,b2,d1,d2,e1,e2,cv1,cv2ns2,f10,f11,f30,f31,f32,f33;
+    	
+    cv1=MNMX(foamCV1,fgmCV1_[0],fgmCV1_[(nFgmCV1_*nFgmCV2_)-1]);
+    i=MNMX((nFgmCV1_-1.)*cv1,0,nFgmCV1_-2.); 			/* lower index */
+    b1=i/(nFgmCV1_-1.);
+    b2=(i+1.)/(nFgmCV1_-1.);
+    f10=MNMX(((b2-cv1)/(b2-b1)),0.,1.);
+    f11=1.-f10;
     
-    label i1m, i2m;
-    scalar cv2min_low, cv2max_low, cv2min_high, cv2max_high, w1p, w1m, w2p, w2m;
-    scalar eta1, eta2;
-    scalar xmin, xmax;
-
-    /* ---------  CV1 ----------*/
-    xmin = fgmData_[0][0];
-    xmax = fgmData_[(nFgmCV1_*nFgmCV2_) - 1][0];
-    eta1 = (foamCV1 - xmin)/(xmax - xmin);
-    eta1 = MX(0.0,eta1);
-    eta1 = MN(1.0,eta1);
-    /* -- lower index -- */
-    i1m = eta1*(nFgmCV1_ - 1);
-    i1m = MX(0, i1m);
-    i1m = MN(nFgmCV1_ - 2,i1m);
-    /* -- weigh factors -- */
-    w1p = (eta1*(nFgmCV1_ - 1.0)) - i1m;
-    w1m = 1.0 - w1p;
-
-    /* --------- CV2 ----------*/
-    cv2min_low =  fgmData_[((i1m * nFgmCV2_) +   1.0)    -1.0][1];
-    cv2max_low =  fgmData_[((i1m +  1.0    ) * nFgmCV2_) -1.0][1];
-    cv2min_high = fgmData_[((i1m +  1.0    ) * nFgmCV2_)     ][1];
-    cv2max_high = fgmData_[((i1m +  2.0    ) * nFgmCV2_) -1.0][1];
-
-    xmin = w1p*cv2min_low + w1m*cv2min_high; 
-    xmax = w1p*cv2max_low + w1m*cv2max_high; 
-    eta2 = (foamCV2 - xmin)/(xmax - xmin); 
-    eta2 = MX(0.0,eta2);
-    eta2 = MN(1.0,eta2);
-    /* -- lower index -- */
-    i2m = eta2*(nFgmCV2_ - 1);
-    i2m = MX(0,i2m);
-    i2m = MN(nFgmCV2_-2,i2m);
-    /* -- weigh factors -- */
-    w2p = (eta2*(nFgmCV2_ - 1.0)) - i2m;
-    w2m = 1.0 - w2p;
-
-    interpolatedValue =   w1m * w2m * fgmData_[ i2m    +  i1m    * nFgmCV2_][varI]
-			+ w1m * w2p * fgmData_[(i2m+1) +  i1m    * nFgmCV2_][varI]
-			+ w1p * w2m * fgmData_[ i2m    + (i1m+1) * nFgmCV2_][varI]
-			+ w1p * w2p * fgmData_[(i2m+1) + (i1m+1) * nFgmCV2_][varI];
-
-    return interpolatedValue;
-
+    cv2min_low=fgmCV2_[((i*nFgmCV2_)+1)-1];
+    cv2max_low=fgmCV2_[((i+1)*nFgmCV2_)-1];
+    cv2ns=MNMX(foamCV2,cv2min_low,cv2max_low);
+    dh_low=((cv2max_low-cv2min_low)/(nFgmCV2_-1));
+    k1= MNMX(cv2ns/dh_low,0.0,nFgmCV2_-2);
+    d1=k1*dh_low + cv2min_low;
+    d2=(k1+1)*dh_low+cv2min_low;
+    f30=MNMX(((d2-cv2ns)/(d2-d1)),0.,1.);
+    f31=1.-f30;
+    
+    cv2min_high=fgmCV2_[(((i+1)*nFgmCV2_)+1)-1];
+    cv2max_high=fgmCV2_[((i+2)*nFgmCV2_)-1];
+    cv2ns2=MNMX(foamCV2,cv2min_high,cv2max_high);
+    dh_high=((cv2max_high-cv2min_high)/(nFgmCV2_-1));
+    k2= MNMX(cv2ns2/dh_high,0.0,nFgmCV2_-2);
+    e1=k2*dh_high + cv2min_high;
+    e2=(k2+1)*dh_high+cv2min_high;
+    f32=MNMX(((e2-cv2ns2)/(e2-e1)),0.,1.); 
+    f33=1.-f32; 
+      
+      
+      
+      /*IN THE CASE OF REACHING THE UPPER LIMIT OF THE MANIFOLD BOTH FACTOR MUST BE SET TO THE UPPER LIMIT:*/
+      /**/
+      if ((k1==nFgmCV2_-2) && (f31==1) && (k2!=nFgmCV2_-2) && (f33!=1))
+      {
+          k2=nFgmCV2_-2; f32=0; f33=1;
+      }
+      /**/
+      else if ((k2==nFgmCV2_-2) && (f33==1) && (k1!=nFgmCV2_-2) && (f31!=1))
+      {
+          k1=nFgmCV2_-2; f30=0; f31=1;
+      }
+      /**/
+      /*IN THE CASE OF REACHING THE LOWER LIMIT OF THE MANIFOLD BOTH FACTOR MUST BE SET TO THE LOWER LIMIT:*/
+      /**/
+      if ((k1==0) && (f30==1) && (k2!=0) && (f32!=1))
+      {
+          k2=0; f32=1;f33=0;
+      }
+      else if ((k2==0) && (f32==1) && (k1!=0) && (f30!=1))
+      {
+         k1=0; f30=1; f31=0;
+      }
+      
+      
+      interpolatedValue  =  f10*f30*fgmData_[ k1   + i   *nFgmCV2_][varI]
+    		       +f10*f31*fgmData_[(k1+1)+ i   *nFgmCV2_][varI]
+    		       +f11*f32*fgmData_[ k2   +(i+1)*nFgmCV2_][varI]
+    		       +f11*f33*fgmData_[(k2+1)+(i+1)*nFgmCV2_][varI];
+    
+    return interpolatedValue; 
 
 }
 
