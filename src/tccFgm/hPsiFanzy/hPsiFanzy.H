@@ -1,32 +1,14 @@
-/*---------------------------------------------------------------------------*\
-  
- ####################                                   ###################
- #                  #                                   #                 #   
- #       /||=====   #                                   #   /||  |||||||  #
- #      //||        #                                   #  //||       ||  #
- #     // ||        #     The FanzyFgm tool             #    ||       ||  #
- #    //==||===     #                                   #    ||    |||||  #
- #   //   ||        #     Copyright (C) 2013 by a.f.    #    ||       ||  #
- #  //    ||anzy    #                                   #    ||       ||  #
- #                  #                                   #    ||   ||||||  #
- ####################                                   ===================
-
--------------------------------------------------------------------------------
-License
-    This file is part of the TheFanzyFgm library.
-
+/*
 Class
     Foam::hPsiFanzy
 
 Description
-    * Enthalpy (h) for a mixture based on compressibility
-    * Temperature calculation based on 'transported' h and tabulated T, h and Cp
     * Transport and thermo properties obtained from a FGM table
 
 SourceFiles
     hPsiFanzy.C
 
-\*---------------------------------------------------------------------------*/
+*/
 
 #ifndef hPsiFanzy_H
 #define hPsiFanzy_H
