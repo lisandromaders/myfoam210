@@ -22,14 +22,10 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Application
-    FANZYfgm
+    fgmTcc
 
 Description
-    Transient solver for laminar or turbulent flow of compressible fluids
-    for HVAC and similar applications.
-
-    Uses the flexible PIMPLE (PISO-SIMPLE) solution for time-resolved and
-    pseudo-transient simulations.
+    FGM solver to solve laminar flames
 
 \*---------------------------------------------------------------------------*/
 
